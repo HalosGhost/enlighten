@@ -27,15 +27,7 @@ main(int argc, char** argv) {
 	char kpath[] = "/sys/class/leds/smc::kbd_backlight/brightness";
 
 	for (i=1;i < argc; i++) {
-		if (strcmp(argv[i],"decrease")) {
-			if (strcmp(argv[i+1],"display")) {
-				modify(argv[i],argv[i+1],dpath);
-			}
-			else if (strcmp(argv[i+1],"keyboard")) {
-				modify(argv[i],argv[i+1],kpath);
-			}
-		}
-		else if (strcmp(argv[i],"increase")) {
+		if (strcmp(argv[i],"decrease")||strcmp(argv[i],"increase")) {
 			if (strcmp(argv[i+1],"display")) {
 				modify(argv[i],argv[i+1],dpath);
 			}

@@ -1,10 +1,16 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 void usage(char *progname) {
 	fprintf(stderr,"Usage: %s [-h|--help] <decrease|increase> <display|keyboard>\n", progname);
 	exit(44);
+}
+
+void perms(char *progname) {
+	fprintf(stderr,"%s must be run with root permissions\n",progname);
+	exit(45);
 }
 
 void modify(char *action, char *device, char *devpath) {
@@ -16,25 +22,24 @@ void modify(char *action, char *device, char *devpath) {
 	fclose(fp);
 
 	fp=fopen(devpath,"w");
-	if (strcmp(action,"increase")) { fprintf(fp,"%d",brightness+(brightness+1)*2); }
-	else if (strcmp(action,"decrease")) { fprintf(fp,"%d",brightness-(brightness/2)); }
+	if (action[0]=='d') { fprintf(fp,"%d",brightness-(brightness/2)); }
+	else if (action[0]=='i') { fprintf(fp,"%d",brightness+(brightness+1)*2); }
 	fclose(fp);
 }
 
-main(int argc, char** argv) {
-	int i;
+int main(int argc, char** argv) {
 	char dpath[] = "/sys/class/backlight/gmux_backlight/brightness";
 	char kpath[] = "/sys/class/leds/smc::kbd_backlight/brightness";
 
-	for (i=1;i < argc; i++) {
-		if (strcmp(argv[i],"decrease")||strcmp(argv[i],"increase")) {
-			if (strcmp(argv[i+1],"display")) {
-				modify(argv[i],argv[i+1],dpath);
-			}
-			else if (strcmp(argv[i+1],"keyboard")) {
-				modify(argv[i],argv[i+1],kpath);
-			}
+	if (argv[1][0]=='d'||argv[1][0]=='i') {
+		if (getuid()!=0) { perms(argv[0]); }
+		else if (argv[2]) {
+			if (argv[2][0]=='d') { modify(argv[1],argv[2],dpath); }
+			else if (argv[2][0]=='k') { modify(argv[1],argv[2],kpath); }
 		}
 		else { usage(argv[0]); }
 	}
+	else { usage(argv[0]); }
+
+	return 0;
 }

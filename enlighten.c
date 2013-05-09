@@ -22,8 +22,14 @@ void modify(char *action, char *device, char *devpath) {
 	fclose(fp);
 
 	fp=fopen(devpath,"w");
-	if (action[0]=='d') { fprintf(fp,"%d",brightness-(brightness/2)); }
-	else if (action[0]=='i') { fprintf(fp,"%d",brightness+(brightness+1)*2); }
+	if (device[0]=='d') {
+		if (action[0]=='d') { fprintf(fp,"%d",brightness-4096); }
+		else if (action[0]=='i') { fprintf(fp,"%d",brightness+4096); }
+	}
+	else if (device[0]=='k') {
+		if (action[0]=='d') { fprintf(fp,"%d",brightness-15); }
+		else if (action[0]=='i') { fprintf(fp,"%d",brightness+15); }
+	}
 	fclose(fp);
 }
 
@@ -36,6 +42,7 @@ int main(int argc, char** argv) {
 		else if (argv[2]) {
 			if (argv[2][0]=='d') { modify(argv[1],argv[2],dpath); }
 			else if (argv[2][0]=='k') { modify(argv[1],argv[2],kpath); }
+			else { usage(argv[0]); }
 		}
 		else { usage(argv[0]); }
 	}

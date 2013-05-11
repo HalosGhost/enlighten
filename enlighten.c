@@ -23,12 +23,12 @@ void modify(char *action, char *device, char *devpath) {
 
 	fp=fopen(devpath,"w");
 	if (device[0]=='d') {
-		if (action[0]=='d') { fprintf(fp,"%d",brightness-4096); }
-		else if (action[0]=='i') { fprintf(fp,"%d",brightness+4096); }
+		if (action[0]=='d') fprintf(fp,"%d",brightness-4096);
+		else if (action[0]=='i') fprintf(fp,"%d",brightness+4096);
 	}
 	else if (device[0]=='k') {
-		if (action[0]=='d') { fprintf(fp,"%d",brightness-15); }
-		else if (action[0]=='i') { fprintf(fp,"%d",brightness+15); }
+		if (action[0]=='d') fprintf(fp,"%d",brightness-15);
+		else if (action[0]=='i') fprintf(fp,"%d",brightness+15);
 	}
 	fclose(fp);
 }
@@ -38,15 +38,15 @@ int main(int argc, char** argv) {
 	char kpath[] = "/sys/class/leds/smc::kbd_backlight/brightness";
 
 	if (argv[1][0]=='d'||argv[1][0]=='i') {
-		if (getuid()!=0) { perms(argv[0]); }
+		if (getuid()!=0) perms(argv[0]);
 		else if (argv[2]) {
-			if (argv[2][0]=='d') { modify(argv[1],argv[2],dpath); }
-			else if (argv[2][0]=='k') { modify(argv[1],argv[2],kpath); }
-			else { usage(argv[0]); }
+			if (argv[2][0]=='d') modify(argv[1],argv[2],dpath);
+			else if (argv[2][0]=='k') modify(argv[1],argv[2],kpath);
+			else usage(argv[0]);
 		}
-		else { usage(argv[0]); }
+		else usage(argv[0]);
 	}
-	else { usage(argv[0]); }
+	else usage(argv[0]);
 
 	return 0;
 }

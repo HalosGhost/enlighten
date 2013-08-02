@@ -37,7 +37,8 @@ int main(int argc, char** argv) {
 	char dpath[] = "/sys/class/backlight/gmux_backlight/brightness";
 	char kpath[] = "/sys/class/leds/smc::kbd_backlight/brightness";
 
-	if (argv[1][0]=='d'||argv[1][0]=='i') {
+	if (argv[1]==NULL) usage(argv[0]);
+	else if (argv[1][0]=='d'||argv[1][0]=='i') {
 		if (getuid()!=0) perms(argv[0]);
 		else if (argv[2]) {
 			if (argv[2][0]=='d') modify(argv[1],argv[2],dpath);

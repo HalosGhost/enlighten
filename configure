@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+usage () {
+    printf "Usage: ./configure [options]\n\n"
+    printf "Options:\n"
+    printf "  --step='#'        Amount by which to {in,de}crement by (default: 100)\n"
+    printf "  --device='name'   Backlight device name (default: intel_backlight)\n"
+    printf "  --reset-config    Reset configuration to the defaults\n"
+}
+
+update () {
+    sed -i ./src/enlighten.h -re "s/(define $1) \"(.*)\"$/\\1 \"$2\"/"
+}
+
+update_num () {
+    sed -i ./src/enlighten.h -re "s/(define $1) (.*)$/\\1 $2/"
+}
+
+default_config () {
+    update_num  D_STEP  100
+    update      D_DEV   "intel_backlight"
+}
+
+show_value () {
+    printf "$1: %s\n" "$('grep' "#define $2" ./src/enlighten.h | sed -re "s/#define $2 (.*)$/\\1/")"
+}
+
+show_config () {
+    show_value 'Step Interval' D_STEP
+    show_value 'Device Name'   D_DEV
+}
+
+if [[ $# == 0 ]]; then
+    default_config
+    show_config
+    exit 0
+fi
+
+for i in "$@"; do
+    case "$i" in
+        --help)         usage; exit 0;;
+        --step=*)       update_num D_STEP "${i#*=}"; shift;;
+        --device=*)     update     D_DEV  "${i#*=}"; shift;;
+        --reset-config) default_config; exit 0;;
+    esac
+done
+
+show_config

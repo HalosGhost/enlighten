@@ -23,8 +23,6 @@ cov-build: clean
 
 install:
 	@install -Dm755 dist/enlighten  $(BINDIR)/enlighten
-	@install -Dm644 dist/zsh        $(ZSHDIR)/site-functions/_enlighten
 
 uninstall:
 	@rm -f $(BINDIR)/enlighten
-	@rm -f $(ZSHDIR)/site-functions/_enlighten

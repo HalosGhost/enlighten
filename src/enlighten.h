@@ -17,7 +17,7 @@ void
 bl_set (signed);
 
 signed
-bl_level (void);
+bl_get (void);
 
 void
 bl_modify (char);

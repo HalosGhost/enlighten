@@ -13,7 +13,7 @@ bl_set (signed level) {
 }
 
 signed
-bl_level (void) {
+bl_get (void) {
 
     FILE * fp = fopen(D_PATH, "r");
     if ( !fp ) {
@@ -34,7 +34,7 @@ bl_level (void) {
 void
 bl_modify (char act) {
 
-    signed bness = bl_level();
+    signed bness = bl_get();
     bl_set(act == '+' ? bness + D_STEP : bness - D_STEP);
 }
 

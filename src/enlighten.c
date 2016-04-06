@@ -3,7 +3,7 @@
 void
 bl_set (signed level) {
 
-    assert(level > 0);
+    level = level < 0 ? 0 : level;
 
     FILE * fp = fopen(D_PATH, "w");
     if ( !fp ) {

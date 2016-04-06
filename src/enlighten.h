@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
-#include <assert.h>
 
 #define PROGNAME  "enlighten"
 #define USAGE_STR "Usage: " PROGNAME " <+|->\n"

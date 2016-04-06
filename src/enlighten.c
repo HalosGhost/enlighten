@@ -31,26 +31,30 @@ bl_get (void) {
     return bness;
 }
 
-void
-bl_modify (char act) {
-
-    signed bness = bl_get();
-    bl_set(act == '+' ? bness + D_STEP : bness - D_STEP);
-}
-
 signed
 main (signed argc, char * argv []) {
 
     if ( argc <= 1 ) {
         fputs(USAGE_STR, stderr);
         return EXIT_SUCCESS;
-    } else if ( getuid() ) {
-        fputs(PERMS_STR, stderr);
-        return EXIT_FAILURE;
     }
 
-    bl_modify(argv[1][0]);
-    return EXIT_SUCCESS;
-}
+    switch ( argv[1][0] ) {
+        case 'h': fputs(USAGE_STR, stdout);                 break;
+        case 'd': check_perms(); bl_set(bl_get() - D_STEP); break;
+        case 'i': check_perms(); bl_set(bl_get() + D_STEP); break;
+        case 'g': printf("%d\n", bl_get());                 break;
+        case 's': {
+            check_perms(); signed bness = 0;
+            if ( argc < 3 || sscanf(argv[2], "%d", &bness) != 1 ) {
+                fputs(USAGE_STR, stderr);
+                return EXIT_FAILURE;
+            } else {
+                bl_set(bness);
+            } break;
+        }
+        default:  fputs(USAGE_STR, stderr); return EXIT_FAILURE;
+    } return EXIT_SUCCESS;
+ }
 
 // vim: set ts=4 sw=4 et:

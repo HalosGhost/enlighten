@@ -1,3 +1,2 @@
-CFLAGS += -g -O2 -fPIE -pie -D_FORTIFY_SOURCE=2 -fstack-protector-strong --param=ssp-buffer-size=1 -Weverything -Werror -std=c11 -fsanitize-trap=undefined
-LDFLAGS += -Wl,-z,relro,-z,now
+CFLAGS += -g -O2 -fPIE -pie -D_FORTIFY_SOURCE=2 -fstack-protector-strong --param=ssp-buffer-size=1 -Weverything -Werror -std=c11 -fsanitize=undefined -fsanitize-trap=undefined -Wl,-z,relro,-z,now
 CC = clang

@@ -1,11 +1,23 @@
 #include "enlighten.h"
 
 void
-modify (char act) {
+bl_set (signed level) {
+
+    assert(level > 0);
+
+    FILE * fp = fopen(D_PATH, "w");
+    if ( !fp ) {
+        perror(PROGNAME ": Failed to open " D_PATH " for writing");
+        exit(EXIT_FAILURE);
+    } fprintf(fp, "%d", level); fclose(fp);
+}
+
+signed
+bl_level (void) {
 
     FILE * fp = fopen(D_PATH, "r");
     if ( !fp ) {
-        perror(PROGNAME ": Failed to open " D_PATH);
+        perror(PROGNAME ": Failed to open " D_PATH " for reading");
         exit(EXIT_FAILURE);
     }
 
@@ -16,15 +28,14 @@ modify (char act) {
         exit(EXIT_FAILURE);
     } fclose(fp);
 
-    signed nb = act == '+' ? bness + D_STEP : bness - D_STEP;
+    return bness;
+}
 
-    fp = fopen(D_PATH, "w");
-    if ( !fp ) {
-        perror(PROGNAME ": Failed to reopen " D_PATH);
-        exit(EXIT_FAILURE);
-    }
+void
+bl_modify (char act) {
 
-    fprintf(fp, "%d", nb); fclose(fp);
+    signed bness = bl_level();
+    bl_set(act == '+' ? bness + D_STEP : bness - D_STEP);
 }
 
 signed
@@ -38,7 +49,7 @@ main (signed argc, char * argv []) {
         return EXIT_FAILURE;
     }
 
-    modify(argv[1][0]);
+    bl_modify(argv[1][0]);
     return EXIT_SUCCESS;
 }
 

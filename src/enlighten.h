@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
+#include <assert.h>
 
 #define PROGNAME  "enlighten"
 #define USAGE_STR "Usage: " PROGNAME " <+|->\n"
@@ -14,5 +15,11 @@
 #define D_PATH "/sys/class/backlight/" D_DEV "/brightness"
 
 void
-modify (char);
+bl_set (signed);
+
+signed
+bl_level (void);
+
+void
+bl_modify (char);
 

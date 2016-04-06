@@ -31,3 +31,6 @@ bl_get (void);
 void
 bl_modify (char);
 
+#define check_perms() \
+    if ( getuid() ) { fputs(PERMS_STR, stderr); exit(EXIT_FAILURE); }
+ 

@@ -7,7 +7,7 @@ bl_set (signed level) {
 
     FILE * fp = fopen(D_PATH, "w");
     if ( !fp ) {
-        perror(PROGNAME ": Failed to open " D_PATH " for writing");
+        perror(FAILED_TO "open " D_PATH " for writing");
         exit(EXIT_FAILURE);
     } fprintf(fp, "%d", level); fclose(fp);
 }
@@ -17,13 +17,13 @@ bl_get (void) {
 
     FILE * fp = fopen(D_PATH, "r");
     if ( !fp ) {
-        perror(PROGNAME ": Failed to open " D_PATH " for reading");
+        perror(FAILED_TO "open " D_PATH " for reading");
         exit(EXIT_FAILURE);
     }
 
     signed bness = 0;
     if ( fscanf(fp, "%d", &bness) != 1 ) {
-        perror(PROGNAME ": Failed to read from " D_PATH);
+        perror(FAILED_TO "read from " D_PATH);
         fclose(fp);
         exit(EXIT_FAILURE);
     } fclose(fp);

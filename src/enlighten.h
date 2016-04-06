@@ -7,6 +7,7 @@
 #define PROGNAME  "enlighten"
 #define USAGE_STR "Usage: " PROGNAME " <+|->\n"
 #define PERMS_STR PROGNAME " must be run with root permissions\n"
+#define FAILED_TO PROGNAME ": Failed to "
 
 /* Configuration */
 #define D_STEP 100

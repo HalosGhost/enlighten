@@ -45,7 +45,8 @@ main (signed argc, char * argv []) {
         case 'i': check_perms(); bl_set(bl_get() + D_STEP); break;
         case 'g': printf("%d\n", bl_get());                 break;
         case 's': {
-            check_perms(); signed bness = 0;
+            if ( getuid() ) { fputs(PERMS_STR, stderr); exit(EXIT_FAILURE); }
+            signed bness = 0;
             if ( argc < 3 || sscanf(argv[2], "%d", &bness) != 1 ) {
                 fputs(USAGE_STR, stderr);
                 return EXIT_FAILURE;

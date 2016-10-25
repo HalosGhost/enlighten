@@ -27,7 +27,3 @@ bl_set (signed);
 
 signed
 bl_get (void);
-
-#define check_perms() \
-    if ( getuid() ) { fputs(PERMS_STR, stderr); exit(EXIT_FAILURE); }
- 

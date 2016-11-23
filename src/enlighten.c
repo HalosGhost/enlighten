@@ -1,18 +1,16 @@
 #include "enlighten.h"
 
 void
-bl_set (signed level) {
-
-    level = level < 0 ? 0 : level;
+bl_set (unsigned level) {
 
     FILE * fp = fopen(D_PATH, "w");
     if ( !fp ) {
         perror(FAILED_TO "open " D_PATH " for writing");
         exit(EXIT_FAILURE);
-    } fprintf(fp, "%d", level); fclose(fp);
+    } fprintf(fp, "%u", level); fclose(fp);
 }
 
-signed
+unsigned
 bl_get (void) {
 
     FILE * fp = fopen(D_PATH, "r");
@@ -21,7 +19,7 @@ bl_get (void) {
         exit(EXIT_FAILURE);
     }
 
-    signed bness = 0;
+    unsigned bness = 0;
     if ( fscanf(fp, "%d", &bness) != 1 ) {
         perror(FAILED_TO "read from " D_PATH);
         fclose(fp);
@@ -34,28 +32,23 @@ bl_get (void) {
 signed
 main (signed argc, char * argv []) {
 
-    if ( argc <= 1 ) {
-        fputs(USAGE_STR, stderr);
+    if ( argc < 2 ) {
+        printf("%u\n", bl_get());
         return EXIT_SUCCESS;
     }
 
-    switch ( argv[1][0] ) {
-        case 'h': fputs(USAGE_STR, stdout);                 break;
-        case 'd': check_perms(); bl_set(bl_get() - D_STEP); break;
-        case 'i': check_perms(); bl_set(bl_get() + D_STEP); break;
-        case 'g': printf("%d\n", bl_get());                 break;
-        case 's': {
-            if ( getuid() ) { fputs(PERMS_STR, stderr); exit(EXIT_FAILURE); }
-            signed bness = 0;
-            if ( argc < 3 || sscanf(argv[2], "%d", &bness) != 1 ) {
-                fputs(USAGE_STR, stderr);
-                return EXIT_FAILURE;
-            } else {
-                bl_set(bness);
-            } break;
-        }
-        default:  fputs(USAGE_STR, stderr); return EXIT_FAILURE;
-    } return EXIT_SUCCESS;
+    char sign = 0;
+    unsigned bness = 0;
+    sscanf(argv[1], "%[+-]", &sign);
+    if ( sscanf(argv[1], "%u", &bness) != 1 ) {
+        fputs(USAGE_STR, stderr);
+        return EXIT_FAILURE;
+    }
+
+    if ( getuid() ) { fputs(PERMS_STR, stderr); exit(EXIT_FAILURE); }
+    bl_set(sign ? bness + bl_get() : bness);
+
+    return EXIT_SUCCESS;
  }
 
 // vim: set ts=4 sw=4 et:

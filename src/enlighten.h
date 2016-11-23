@@ -8,7 +8,6 @@
 #define FAILED_TO PROGNAME ": Failed to "
 
 /* Configuration */
-#define D_STEP 100
 #define D_DEV  "intel_backlight"
 #define D_PATH "/sys/class/backlight/" D_DEV "/brightness"
 
@@ -17,13 +16,13 @@ static const char USAGE_STR [] =
     PROGNAME " -- a very small backlight controller\n\n"
     "Commands:\n"
     "  help        print this help and exit\n"
-    "  get         print the current brightness and exit\n"
-    "  set LVL     set brightness to LVL and exit\n"
-    "  inc         increase brightness by step\n"
-    "  dec         decrease brightness by step\n";
+    "  [+|-]<int>  set brightness to int\n"
+    "              if + or - is specified\n"
+    "              increment or decrement\n"
+    "              accordingly\n";
 
 void
-bl_set (signed);
+bl_set (unsigned);
 
-signed
+unsigned
 bl_get (void);

@@ -20,7 +20,7 @@ bl_get (void) {
     }
 
     unsigned bness = 0;
-    if ( fscanf(fp, "%d", &bness) != 1 ) {
+    if ( fscanf(fp, "%u", &bness) != 1 ) {
         perror(FAILED_TO "read from " D_PATH);
         fclose(fp);
         exit(EXIT_FAILURE);

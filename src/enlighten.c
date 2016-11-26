@@ -46,7 +46,7 @@ main (signed argc, char * argv []) {
     }
 
     if ( getuid() ) { fputs(PERMS_STR, stderr); exit(EXIT_FAILURE); }
-    bl_set(sign ? bness + bl_get() : bness);
+    bl_set(bness + (sign ? bl_get() : 0));
 
     return EXIT_SUCCESS;
  }

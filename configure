@@ -3,7 +3,6 @@
 usage () {
     printf "Usage: ./configure [options]\n\n"
     printf "Options:\n"
-    printf "  --step='#'        Amount by which to {in,de}crement by (default: 100)\n"
     printf "  --device='name'   Backlight device name (default: intel_backlight)\n"
     printf "  --reset-config    Reset configuration to the defaults\n"
 }
@@ -12,12 +11,7 @@ update () {
     sed -i ./src/enlighten.h -re "s/(define $1) \"(.*)\"$/\\1 \"$2\"/"
 }
 
-update_num () {
-    sed -i ./src/enlighten.h -re "s/(define $1) (.*)$/\\1 $2/"
-}
-
 default_config () {
-    update_num  D_STEP  100
     update      D_DEV   "intel_backlight"
 }
 
@@ -26,7 +20,6 @@ show_value () {
 }
 
 show_config () {
-    show_value 'Step Interval' D_STEP
     show_value 'Device Name'   D_DEV
 }
 
@@ -39,7 +32,6 @@ fi
 for i in "$@"; do
     case "$i" in
         --help)         usage; exit 0;;
-        --step=*)       update_num D_STEP "${i#*=}"; shift;;
         --device=*)     update     D_DEV  "${i#*=}"; shift;;
         --reset-config) default_config; exit 0;;
     esac

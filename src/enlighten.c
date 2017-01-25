@@ -13,7 +13,6 @@ bl_set (unsigned level) {
 unsigned
 bl_get (const char * path) {
 
-    (void )path;
     FILE * fp = fopen(path, "r");
     if ( !fp ) {
         fprintf(stderr, FAILED_TO "open %s for reading: %s\n", path,

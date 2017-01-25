@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <errno.h>
 
 #define PROGNAME  "enlighten"
 #define PERMS_STR PROGNAME ": That command must be run with root permissions\n"
@@ -15,14 +16,15 @@ static const char USAGE_STR [] =
     "Usage: " PROGNAME " <command> (<argument>)\n"
     PROGNAME " -- a very small backlight controller\n\n"
     "Commands:\n"
-    "  help        print this help and exit\n"
-    "  [+|-]<int>  set brightness to int\n"
-    "              if + or - is specified\n"
-    "              increment or decrement\n"
-    "              accordingly\n";
+    "  help           print this help and exit\n"
+    "  [+|-]<int>[%]  set brightness to int\n\n"
+    "  if + or - is specified, increment or\n"
+    "  decrement accordingly\n\n"
+    "  if % is specified, treat int as a\n"
+    "  percentage of the max brightness\n";
 
 void
 bl_set (unsigned);
 
 unsigned
-bl_get (void);
+bl_get (const char *);

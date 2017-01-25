@@ -11,17 +11,19 @@ bl_set (unsigned level) {
 }
 
 unsigned
-bl_get (void) {
+bl_get (const char * path) {
 
-    FILE * fp = fopen(D_PATH, "r");
+    (void )path;
+    FILE * fp = fopen(path, "r");
     if ( !fp ) {
-        perror(FAILED_TO "open " D_PATH " for reading");
+        fprintf(stderr, FAILED_TO "open %s for reading: %s\n", path,
+                strerror(errno));
         exit(EXIT_FAILURE);
     }
 
     unsigned bness = 0;
     if ( fscanf(fp, "%u", &bness) != 1 ) {
-        perror(FAILED_TO "read from " D_PATH);
+        fprintf(stderr, FAILED_TO "read from %s: %s\n", path, strerror(errno));
         fclose(fp);
         exit(EXIT_FAILURE);
     } fclose(fp);
@@ -33,7 +35,7 @@ signed
 main (signed argc, char * argv []) {
 
     if ( argc < 2 ) {
-        printf("%u\n", bl_get());
+        printf("%u\n", bl_get(D_PATH));
         return EXIT_SUCCESS;
     }
 
@@ -46,7 +48,7 @@ main (signed argc, char * argv []) {
     }
 
     if ( getuid() ) { fputs(PERMS_STR, stderr); exit(EXIT_FAILURE); }
-    bl_set(bness + !!sign * bl_get());
+    bl_set(bness + !!sign * bl_get(D_PATH));
 
     return EXIT_SUCCESS;
  }

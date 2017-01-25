@@ -33,12 +33,13 @@ bl_get (const char * path) {
 signed
 main (signed argc, char * argv []) {
 
+    unsigned cur = bl_get(D_PATH), max = bl_get(DM_PATH);
     if ( argc < 2 ) {
-        printf("%u\n", bl_get(D_PATH));
+        printf("%u / %u (%u%%)\n", cur, max, cur * 100 / max);
         return EXIT_SUCCESS;
     }
 
-    char sign = 0;
+    char sign = 0, perc [] = "";
     unsigned bness = 0;
     sscanf(argv[1], "%[+-]", &sign);
     if ( sscanf(argv[1], "%u", &bness) != 1 ) {
@@ -46,8 +47,12 @@ main (signed argc, char * argv []) {
         return EXIT_FAILURE;
     }
 
+    if ( sscanf(argv[1], "%*u%[%]", perc) != EOF && !errno ) {
+        bness *= (max / 100);
+    }
+
     if ( getuid() ) { fputs(PERMS_STR, stderr); exit(EXIT_FAILURE); }
-    bl_set(bness + !!sign * bl_get(D_PATH));
+    bl_set(bness + !!sign * cur);
 
     return EXIT_SUCCESS;
  }

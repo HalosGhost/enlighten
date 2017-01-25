@@ -9,8 +9,10 @@
 #define FAILED_TO PROGNAME ": Failed to "
 
 /* Configuration */
-#define D_DEV  "intel_backlight"
-#define D_PATH "/sys/class/backlight/" D_DEV "/brightness"
+#define D_DEV   "intel_backlight"
+#define PATH    "/sys/class/backlight/" D_DEV
+#define D_PATH  PATH "/brightness"
+#define DM_PATH PATH "/max_brightness"
 
 static const char USAGE_STR [] =
     "Usage: " PROGNAME " <command> (<argument>)\n"

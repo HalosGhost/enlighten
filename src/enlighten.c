@@ -49,9 +49,7 @@ main (signed argc, char * argv []) {
 
     if ( sscanf(argv[1], "%*u%[%]", perc) != EOF && !errno ) {
         bness *= (max / 100);
-    }
-
-    bl_set(bness + !!sign * cur);
+    } bl_set(bness + !!sign * cur);
 
     return EXIT_SUCCESS;
  }

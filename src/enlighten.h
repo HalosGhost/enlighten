@@ -15,9 +15,10 @@
 #define DM_PATH PATH "/max_brightness"
 
 static const char USAGE_STR [] =
-    "Usage: " PROGNAME " <command> (<argument>)\n"
+    "Usage: " PROGNAME " <command>\n"
     PROGNAME " -- a very small backlight controller\n\n"
     "Commands:\n"
+    "  <nothing>      get current brightness\n"
     "  help           print this help and exit\n"
     "  [+|-]<int>[%]  set brightness to int\n\n"
     "  if + or - is specified, increment or\n"

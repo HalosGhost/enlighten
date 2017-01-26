@@ -1,11 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <errno.h>
 
 #define PROGNAME  "enlighten"
-#define PERMS_STR PROGNAME ": That command must be run with root permissions\n"
 #define FAILED_TO PROGNAME ": Failed to "
 
 /* Configuration */

@@ -51,7 +51,6 @@ main (signed argc, char * argv []) {
         bness *= (max / 100);
     }
 
-    if ( getuid() ) { fputs(PERMS_STR, stderr); exit(EXIT_FAILURE); }
     bl_set(bness + !!sign * cur);
 
     return EXIT_SUCCESS;

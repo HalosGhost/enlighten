@@ -32,6 +32,8 @@ simple: gen dist
 
 install:
 	@install -Dm755 dist/enlighten  $(BINDIR)/enlighten
+	@install -Dm755 90-backlight.rules $(LIBDIR)/udev/rules.d/90-backlight.rules
 
 uninstall:
-	@rm -f $(BINDIR)/enlighten
+	@rm -f -- $(BINDIR)/enlighten
+	@rm -f -- $(LIBDIR)/udev/rules.d/90-backlight.rules

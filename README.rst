@@ -7,8 +7,8 @@ Features
 --------
 
 * Set brightness to a particular level!
-* Increase *and* Decrease brightness level relative to the current level!
 * Retrieve current brightness level!
+* Increase *and* Decrease brightness level relative to the current level!
 * Use percentage of maximum brightness *or* absolute steps!
 
 Non-Features

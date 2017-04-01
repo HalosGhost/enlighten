@@ -8,23 +8,22 @@ usage () {
 }
 
 update () {
-    sed -i ./src/enlighten.h -re "s/(define $1) \"(.*)\"$/\\1 \"$2\"/"
+    sed -i ./src/enlighten.h -re "s/(define $1)(\s*)\"(.*)\"$/\\1\\2\"$2\"/"
 }
 
 default_config () {
-    update      D_DEV   "intel_backlight"
+    update D_DEV 'intel_backlight'
 }
 
 show_value () {
-    printf "$1: %s\n" "$('grep' "#define $2" ./src/enlighten.h | sed -re "s/#define $2 (.*)$/\\1/")"
+    printf "$1: %s\n" "$('grep' "#define $2" ./src/enlighten.h | sed -re "s/#define $2\s*(.*)$/\\1/")"
 }
 
 show_config () {
-    show_value 'Device Name'   D_DEV
+    show_value 'Device Name' D_DEV
 }
 
 if [[ $# == 0 ]]; then
-    default_config
     show_config
     exit 0
 fi
@@ -32,8 +31,8 @@ fi
 for i in "$@"; do
     case "$i" in
         --help)         usage; exit 0;;
-        --device=*)     update     D_DEV  "${i#*=}"; shift;;
-        --reset-config) default_config; exit 0;;
+        --device=*)     update D_DEV "${i#*=}"; shift;;
+        --reset-config) default_config;;
     esac
 done
 

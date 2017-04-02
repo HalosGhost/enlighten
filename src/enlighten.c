@@ -31,7 +31,7 @@ bl_get (const char * path) {
 }
 
 signed
-main (signed argc, char * argv []) {
+main (signed argc, const char * argv []) {
 
     unsigned cur = bl_get(D_PATH), max = bl_get(DM_PATH);
     if ( argc < 2 ) {

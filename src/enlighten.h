@@ -7,10 +7,8 @@
 #define FAILED_TO PROGNAME ": Failed to "
 
 /* Configuration */
-#define D_DEV   "intel_backlight"
-#define PATH    "/sys/class/backlight/" D_DEV
-#define D_PATH  PATH "/brightness"
-#define DM_PATH PATH "/max_brightness"
+#define D_DEV    "intel_backlight"
+#define BASEPATH "/sys/class/backlight/"
 
 static const char USAGE_STR [] =
     "Usage: " PROGNAME " <command>\n"
@@ -22,10 +20,13 @@ static const char USAGE_STR [] =
     "  if + or - is specified, increment or\n"
     "  decrement accordingly\n\n"
     "  if % is specified, treat int as a\n"
-    "  percentage of the max brightness\n";
+    "  percentage of the max brightness\n\n"
+    "  set the BACKLIGHT_DEVICE environment\n"
+    "  variable to specify a device name at\n"
+    "  runtime\n";
 
 void
-bl_set (unsigned);
+bl_set (const char *, unsigned);
 
 unsigned
 bl_get (const char *);

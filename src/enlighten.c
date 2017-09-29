@@ -71,7 +71,7 @@ main (signed argc, const char * argv []) {
 
     errno = 0;
     if ( sscanf(argv[1], "%*u%[%]", perc) != EOF && !errno ) {
-        bness *= (max / 100);
+        bness = bness * max / 100;
     } bl_set(bpath, bness + !!sign * cur);
 
     cleanup:

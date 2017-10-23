@@ -1,3 +1,0 @@
-include_rules
-
-: *.c | *.h |> $(CC) $(CFLAGS) %f -o %o |> ../dist/enlighten

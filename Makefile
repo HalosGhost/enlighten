@@ -6,19 +6,20 @@ BINDIR ?= $(DESTDIR)$(PREFIX)/bin
 ZSHDIR ?= $(DESTDIR)$(PREFIX)/share/zsh
 BSHDIR ?= $(DESTDIR)$(PREFIX)/share/bash-completions
 
-.PHONY: all clean gen clang-analyze cov-build simple install uninstall
+CC = clang
+CFLAGS ?= -g -O2 -fPIE -pie -D_FORTIFY_SOURCE=2 -fstack-protector-strong --param=ssp-buffer-size=1 -Weverything -Werror -std=c11 -fsanitize=undefined -fsanitize-trap=undefined -Wl,-z,relro,-z,now
+CFLAGS += -Wno-disabled-macro-expansion
+
+.PHONY: all clean clang-analyze cov-build install uninstall
 
 all: dist
-	@tup upd
+	@$(CC) $(CFLAGS) src/$(PROGNM).c -o dist/$(PROGNM)
 
 clean:
 	@rm -rf -- dist cov-int $(PROGNM).tgz make.sh ./src/*.plist
 
 dist:
 	@mkdir -p ./dist
-
-gen: clean
-	@tup generate make.sh
 
 cov-build: gen dist
 	@cov-build --dir cov-int ./make.sh
@@ -27,13 +28,10 @@ cov-build: gen dist
 clang-analyze:
 	@(pushd ./src; clang-check -analyze ./*.c)
 
-simple: gen dist
-	@./make.sh
-
 install:
-	@install -Dm755 dist/enlighten  $(BINDIR)/enlighten
+	@install -Dm755 dist/$(PROGNM)  $(BINDIR)/$(PROGNM)
 	@install -Dm755 90-backlight.rules $(LIBDIR)/udev/rules.d/90-backlight.rules
 
 uninstall:
-	@rm -f -- $(BINDIR)/enlighten
+	@rm -f -- $(BINDIR)/$(PROGNM)
 	@rm -f -- $(LIBDIR)/udev/rules.d/90-backlight.rules

@@ -31,6 +31,16 @@ bl_get (const char * path) {
     return bness;
 }
 
+unsigned
+bl_calc (signed bness, bool sign, bool perc, unsigned cur, unsigned max) {
+
+    if ( perc ) {
+        bness = bness * (signed )max / 100;
+    }
+
+    return (unsigned )(bness + sign * (signed )cur);
+}
+
 signed
 main (signed argc, const char * argv []) {
 
@@ -69,10 +79,10 @@ main (signed argc, const char * argv []) {
         goto cleanup;
     }
 
-    errno = 0;
-    if ( sscanf(argv[1], "%*u%[%]", perc) != EOF && !errno ) {
-        bness = bness * (signed )max / 100;
-    } bl_set(bpath, (unsigned )(bness + !!sign * (signed )cur));
+    sscanf(argv[1], "%*d%[%]", perc);
+
+    unsigned nbness = bl_calc(bness, sign, perc[0] == '%', cur, max);
+    bl_set(bpath, nbness);
 
     cleanup:
         if ( bpath ) { free(bpath); }

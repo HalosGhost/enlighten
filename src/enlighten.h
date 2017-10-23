@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <stdbool.h>
 
 #define PROGNAME  "enlighten"
 #define FAILED_TO PROGNAME ": Failed to "
@@ -21,12 +22,15 @@ static const char USAGE_STR [] =
     "  decrement accordingly\n\n"
     "  if % is specified, treat int as a\n"
     "  percentage of the max brightness\n\n"
-    "  set the BACKLIGHT_DEVICE environment\n"
-    "  variable to specify a device name at\n"
-    "  runtime\n";
+    "set the BACKLIGHT_DEVICE environment variable\n"
+    "to specify a device name at runtime\n";
 
 void
 bl_set (const char *, unsigned);
 
 unsigned
 bl_get (const char *);
+
+unsigned
+bl_calc (signed, bool, bool, unsigned, unsigned);
+

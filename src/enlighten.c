@@ -61,9 +61,9 @@ main (signed argc, const char * argv []) {
     }
 
     char sign = 0, perc [] = { 0, 0 };
-    unsigned bness = 0;
+    signed bness = 0;
     sscanf(argv[1], "%[+-]", &sign);
-    if ( sscanf(argv[1], "%u", &bness) != 1 ) {
+    if ( sscanf(argv[1], "%d", &bness) != 1 ) {
         fputs(USAGE_STR, stderr);
         status = EXIT_FAILURE;
         goto cleanup;
@@ -71,8 +71,8 @@ main (signed argc, const char * argv []) {
 
     errno = 0;
     if ( sscanf(argv[1], "%*u%[%]", perc) != EOF && !errno ) {
-        bness = bness * max / 100;
-    } bl_set(bpath, bness + !!sign * cur);
+        bness = bness * (signed )max / 100;
+    } bl_set(bpath, (unsigned )(bness + !!sign * (signed )cur));
 
     cleanup:
         if ( bpath ) { free(bpath); }

@@ -9,7 +9,7 @@ url='https://github.com/HalosGhost/enlighten'
 arch=('i686' 'x86_64')
 license=('GPL3')
 
-makedepends=('git' 'tup' 'clang')
+makedepends=('git' 'clang')
 
 source=('git+https://github.com/HalosGhost/enlighten.git')
 sha256sums=('SKIP')

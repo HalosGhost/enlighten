@@ -17,7 +17,7 @@ Non-Features
 ------------
 
 * No auto-dimming
-* No brightness level save/restore (note, systemd _`supports this`: https://travis-ci.org/tkf/emacs-jedi)
+* No brightness level save/restore (note, systemd `supports this <https://wiki.archlinux.org/index.php/Backlight#systemd-backlight_service>`_)
 * Cannot order pizzas
 * Cannot read mail (`yet <http://catb.org/jargon/html/Z/Zawinskis-Law.html>`_)
 

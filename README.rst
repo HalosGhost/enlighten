@@ -21,11 +21,6 @@ Non-Features
 * Cannot order pizzas
 * Cannot read mail (`yet <http://catb.org/jargon/html/Z/Zawinskis-Law.html>`_)
 
-ToDo
-----
-
-* Add man page
-
 Install
 -------
 

@@ -39,7 +39,7 @@ Manual installation:
     sudo make install
 
 Replace <device> with the name of your backlight device. It should be listed in
-:code:`/sys/class/backlight`. Intel graphics for example calls the device "intel_backlight".
+:code:`/sys/class/backlight`. Intel graphics for example calls the device :code:`intel_backlight`.
 
 Arch Linux package: https://aur.archlinux.org/packages/enlighten-git/
 

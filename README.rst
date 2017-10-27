@@ -32,7 +32,7 @@ Install
 Dependancies: clang
 
 Manual installation:
-.. code-block:: bash
+::
 
     ./configure --device=<device>
     make

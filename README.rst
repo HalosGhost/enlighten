@@ -44,7 +44,7 @@ Run as regular user
 Copy the file :code:`90-backlight.rules` to :code:`/etc/udev/rules.d/`
 
 This adds a udev rule to allow users in the video group to run enlighten without
-a password. Add your user to the video group with:::
+a password. Add your user to the video group with::
 
     usermod -a -G video <username>
 

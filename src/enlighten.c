@@ -41,6 +41,23 @@ bl_calc (signed bness, bool sign, bool perc, unsigned cur, unsigned max) {
     return (unsigned )(bness + sign * (signed )cur);
 }
 
+void
+bl_list (const char * devpath) {
+
+    if ( !devpath ) { return; }
+
+    DIR * dir = opendir(devpath);
+    struct dirent * path = NULL;
+
+    if ( dir ) {
+        while ( (path = readdir(dir)) ) {
+            if ( path->d_name[0] != '.' ) {
+                printf("%s\t", path->d_name);
+            }
+        } putchar('\n');
+    }
+}
+
 signed
 main (signed argc, const char * argv []) {
 
@@ -68,6 +85,14 @@ main (signed argc, const char * argv []) {
     if ( argc < 2 ) {
         printf("%u / %u (%u%%)\n", cur, max, cur * 100 / max);
         goto cleanup;
+    } else {
+        if ( argv[1][0] == 'h' || (strlen(argv[1]) >= 2 && argv[1][1] == 'h')) {
+            fputs(USAGE_STR, stderr);
+            goto cleanup;
+        } else if ( argv[1][0] == 'l' || (strlen(argv[1]) >= 2 && argv[1][1] == 'l')) {
+            bl_list(BASEPATH);
+            goto cleanup;
+        }
     }
 
     char sign = 0, perc [] = { 0, 0 };

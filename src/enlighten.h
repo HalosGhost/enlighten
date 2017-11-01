@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <stdbool.h>
+#include <dirent.h>
 
 #define PROGNAME  "enlighten"
 #define FAILED_TO PROGNAME ": Failed to "
@@ -16,6 +17,7 @@ static const char USAGE_STR [] =
     PROGNAME " -- a very small backlight controller\n\n"
     "Commands:\n"
     "  <nothing>      get current brightness\n"
+    "  list           get a list of devices\n"
     "  help           print this help and exit\n"
     "  [+|-]<int>[%]  set brightness to int\n\n"
     "  if + or - is specified, increment or\n"
@@ -34,3 +36,5 @@ bl_get (const char *);
 unsigned
 bl_calc (signed, bool, bool, unsigned, unsigned);
 
+void
+bl_list (const char *);

@@ -38,6 +38,13 @@ Replace <device> with the name of your backlight device. It should be listed in
 
 Arch Linux package: https://aur.archlinux.org/packages/enlighten-git/
 
+Run as regular user
+-------------------
+
+Add your user to the video group to run enlighten as a regular user::
+
+    usermod -a -G video <username>
+
 Usage
 -----
 

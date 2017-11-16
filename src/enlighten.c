@@ -56,6 +56,8 @@ bl_list (const char * devpath) {
             }
         } putchar('\n');
     }
+
+    closedir(dir);
 }
 
 signed
@@ -70,10 +72,17 @@ main (signed argc, const char * argv []) {
     size_t blen = 33 + strlen(dev),
            mlen = 37 + strlen(dev);
 
-    char * bpath = malloc(blen),
-         * mpath = malloc(mlen);
+    char * bpath = malloc(blen);
+    if ( !bpath ) {
+        fputs(FAILED_TO "allocate space for brightness paths\n", stderr);
+    }
+
+    char * mpath = malloc(mlen);
+    if ( !mpath ) {
+        fputs(FAILED_TO "allocate space for max brightness paths\n", stderr);
+    }
+
     if ( !bpath || !mpath ) {
-        fputs(FAILED_TO "allocate space for device paths\n", stderr);
         status = EXIT_FAILURE;
         goto cleanup;
     }

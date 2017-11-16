@@ -48,4 +48,4 @@ Add your user to the video group to run enlighten as a regular user::
 Usage
 -----
 
-For usage information type :code:`enlighten --help`
+For usage information type :code:`enlighten help`

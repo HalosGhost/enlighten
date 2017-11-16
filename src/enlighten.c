@@ -95,10 +95,10 @@ main (signed argc, const char * argv []) {
         printf("%u / %u (%u%%)\n", cur, max, cur * 100 / max);
         goto cleanup;
     } else {
-        if ( argv[1][0] == 'h' || (strlen(argv[1]) >= 2 && argv[1][1] == 'h')) {
+        if ( argv[1][0] == 'h' ) {
             fputs(USAGE_STR, stderr);
             goto cleanup;
-        } else if ( argv[1][0] == 'l' || (strlen(argv[1]) >= 2 && argv[1][1] == 'l')) {
+        } else if ( argv[1][0] == 'l' ) {
             bl_list(BASEPATH);
             goto cleanup;
         }

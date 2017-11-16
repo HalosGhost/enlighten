@@ -97,7 +97,7 @@ main (signed argc, const char * argv []) {
 
     char sign = 0, perc [] = { 0, 0 };
     signed bness = 0;
-    sscanf(argv[1], "%[+-]", &sign);
+    sscanf(argv[1], "%1[+-]", &sign);
     if ( sscanf(argv[1], "%d", &bness) != 1 ) {
         fputs(USAGE_STR, stderr);
         status = EXIT_FAILURE;

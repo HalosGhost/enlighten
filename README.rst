@@ -7,6 +7,7 @@ Linux.
 Features
 --------
 
+* Leverage backlight sysfs interfaces!
 * Set brightness to a particular level!
 * Retrieve current brightness level!
 * Increase *and* Decrease brightness level relative to the current level!
@@ -24,7 +25,7 @@ Non-Features
 Install
 -------
 
-Dependancies: clang
+Dependencies: clang
 
 Manual installation:
 ::
@@ -41,6 +42,7 @@ Arch Linux package: https://aur.archlinux.org/packages/enlighten-git/
 Run as regular user
 -------------------
 
+Given that you have installed and loaded the prepackaged backlight udev rule, or that you have manually changed the group permissions on the ``brightness`` file of your device.
 Add your user to the video group to run enlighten as a regular user::
 
     usermod -a -G video <username>

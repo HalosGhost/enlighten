@@ -23,10 +23,62 @@ show_config () {
     show_value 'Device Name' D_DEV
 }
 
-if [[ $# == 0 ]]; then
-    show_config
-    exit 0
-fi
+check_file () {
+    [[ -f "$1" ]] && fnd='\x1b[32mY' || fnd='\x1b[31m\x1b[1mN';
+    printf 'Found %-*s\t[ %b\x1b[0m ]\n' "$2" "$1:" "$fnd"
+    [[ -f "$1" ]] || exit 1
+}
+
+def_cflags=(-g -O3 -fPIE -pie -D_FORTIFY_SOURCE=2 -fstack-protector-strong
+            --param=ssp-buffer-size=1 -Weverything -Werror -std=c11 -ggdb
+            -march=native -flto -fsanitize=undefined -fsanitize-trap=undefined
+            -Wl,-z,relro,-z,now -Wno-disabled-macro-expansion)
+
+check_deps () {
+    CC=${CC:-clang}
+
+    pushd ./src &> /dev/null
+    hdrs=($($CC -M enlighten.c | sed -e 's|.*:||' -e 's|\\||' | tr -d '\n'))
+
+    len=0
+    for i in make "$CC" mkdir install rm "${hdrs[@]}" "$def_cflags[@]"; do
+        if (( "${#i}" > len )); then
+            len="${#i}"
+        fi
+    done
+
+    for i in make "$(which "$CC")" mkdir install rm; do
+        [[ "$(which "$i" &> /dev/null; echo $?)" == 0 ]] && {
+            check_file "$(which "$i")" "$len"
+        } || check_file "$i" "$len"
+    done
+
+    for i in "${hdrs[@]}"; do
+        if [[ "$i" != *'.h' || "$i" == *'bits'* ]]; then
+            continue
+        fi
+
+        fh=$($CC -c -o tm -x c - <<< "#include \"$i\"" &> /dev/null; echo $?)
+        [[ "$fh" == 0 ]] && {
+            fnd='\x1b[32mY'; [[ -f "tm" ]] && rm -- tm
+        } || fnd='\x1b[31m\x1b[1mN'
+
+        printf 'Found %-*s\t[ %b\x1b[0m ]\n' "$len" "$i:" "$fnd"
+        [[ "$fh" != 0 ]] && exit 1
+    done
+
+    for i in "${def_cflags[@]}"; do
+        fc=$($CC -c -o tm -x c - "$i" <<< "#include <stdio.h>" &> /dev/null; echo $?)
+        [[ "$fc" == 0 ]] && {
+            fnd='\x1b[32mY'; [[ -f "tm" ]] && rm -- tm
+        } || fnd='\x1b[31m\x1b[1mN'
+
+        printf 'Found %-*s\t[ %b\x1b[0m ]\n' "$len" "$i:" "$fnd"
+        [[ "$fc" != 0 ]] && exit 1
+    done
+
+    popd &> /dev/null
+}
 
 for i in "$@"; do
     case "$i" in
@@ -37,3 +89,4 @@ for i in "$@"; do
 done
 
 show_config
+check_deps

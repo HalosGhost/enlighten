@@ -39,7 +39,7 @@ clang-analyze:
 
 install:
 	@install -Dm755 dist/$(PROGNM) $(BINDIR)/$(PROGNM)
-	@install -Dm755 dist/$(PROGNM).1 $(DOCDIR)/$(PROGNM).1
+	@install -Dm755 dist/$(PROGNM).1 $(DOCDIR)/man1/$(PROGNM).1
 	@install -Dm755 90-backlight.rules $(LIBDIR)/udev/rules.d/90-backlight.rules
 
 uninstall:

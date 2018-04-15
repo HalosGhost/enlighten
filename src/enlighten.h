@@ -12,6 +12,9 @@
 #define D_DEV    "intel_backlight"
 #define BASEPATH "/sys/class/backlight/"
 
+#define THRESH_TOP "100%"
+#define THRESH_BOT "0"
+
 static const char USAGE_STR [] =
     "Usage: " PROGNAME " <command>\n"
     PROGNAME " -- a very small backlight controller\n\n"

@@ -68,6 +68,13 @@ main (signed argc, const char * argv []) {
     dev = getenv("BACKLIGHT_DEVICE");
     dev = dev ? dev : D_DEV;
 
+    const char * thresh_top = 0;
+    thresh_top = getenv("BACKLIGHT_THRESHOLD_TOP");
+    thresh_top = thresh_top ? thresh_top : THRESH_TOP;
+
+    const char * thresh_bot = 0;
+    thresh_bot = getenv("BACKLIGHT_THRESHOLD_BOT");
+    thresh_bot = thresh_bot ? thresh_bot : THRESH_BOT;
 
     size_t blen = 33 + strlen(dev);
     char * bpath = malloc(blen);

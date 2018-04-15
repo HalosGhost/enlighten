@@ -6,13 +6,14 @@ BINDIR ?= $(DESTDIR)$(PREFIX)/bin
 ZSHDIR ?= $(DESTDIR)$(PREFIX)/share/zsh
 BSHDIR ?= $(DESTDIR)$(PREFIX)/share/bash-completions
 
-CC = clang
-CFLAGS ?= -g -ggdb -O2 -fPIE -pie -flto -D_FORTIFY_SOURCE=2 -fstack-protector-strong --param=ssp-buffer-size=1 -Weverything -Werror -std=c11 -fsanitize=undefined -fsanitize-trap=undefined -Wl,-z,relro,-z,now
+include Makerules
 CFLAGS += -Wno-disabled-macro-expansion
 
-.PHONY: all clean clang-analyze cov-build install uninstall
+.PHONY: all bin clean clang-analyze cov-build doc install uninstall
 
-all: dist
+all: dist bin doc
+
+bin: dist
 	@$(CC) $(CFLAGS) src/$(PROGNM).c -o dist/$(PROGNM)
 
 clean:
@@ -20,6 +21,14 @@ clean:
 
 dist:
 	@mkdir -p ./dist
+
+doc: dist
+	@(cd doc; \
+		sphinx-build -b man -Dversion=$(VER) \
+			-d doctree -E . ../dist $(PROGNM).rst; \
+		rm -r -- doctree; \
+	)
+
 
 cov-build: dist
 	@cov-build --dir cov-int ./make.sh
@@ -30,8 +39,10 @@ clang-analyze:
 
 install:
 	@install -Dm755 dist/$(PROGNM) $(BINDIR)/$(PROGNM)
+	@install -Dm755 dist/$(PROGNM).1 $(DOCDIR)/$(PROGNM).1
 	@install -Dm755 90-backlight.rules $(LIBDIR)/udev/rules.d/90-backlight.rules
 
 uninstall:
 	@rm -f -- $(BINDIR)/$(PROGNM)
+	@rm -f -- $(DOCDIR)/$(PROGNM).1
 	@rm -f -- $(LIBDIR)/udev/rules.d/90-backlight.rules

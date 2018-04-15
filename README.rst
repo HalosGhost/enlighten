@@ -13,6 +13,7 @@ Features
 * Increase *and* Decrease brightness level relative to the current level!
 * Use percentage of maximum brightness *or* absolute steps!
 * Specify backlight device in an environment variable!
+* Specify minimum and maximum thresholds in environment variables!
 
 Non-Features
 ------------

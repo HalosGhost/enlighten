@@ -26,9 +26,14 @@ static const char USAGE_STR [] =
     "  if + or - is specified, increment or\n"
     "  decrement accordingly\n\n"
     "  if % is specified, treat int as a\n"
-    "  percentage of the max brightness\n\n"
-    "set the BACKLIGHT_DEVICE environment variable\n"
-    "to specify a device name at runtime\n";
+    "  percentage of the max brightness\n"
+    "\nsee " PROGNAME "(1) for more usage information\n"
+    ;
+
+struct brightness_cmd {
+    signed bness;
+    signed sign: 16, perc: 16;
+};
 
 void
 bl_set (const char *, unsigned);
@@ -36,8 +41,11 @@ bl_set (const char *, unsigned);
 unsigned
 bl_get (const char *);
 
+struct brightness_cmd
+bl_cmd_parse (const char *);
+
 unsigned
-bl_calc (signed, bool, bool, unsigned, unsigned);
+bl_calc (struct brightness_cmd, unsigned, unsigned);
 
 void
 bl_list (const char *);

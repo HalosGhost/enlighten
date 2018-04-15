@@ -31,14 +31,31 @@ bl_get (const char * path) {
     return bness;
 }
 
-unsigned
-bl_calc (signed bness, bool sign, bool perc, unsigned cur, unsigned max) {
+struct brightness_cmd
+bl_cmd_parse (const char * string) {
 
-    if ( perc ) {
-        bness = bness * (signed )max / 100;
+    char sign [] = { 0, 0 }, perc [] = { 0, 0 };
+    signed bness = 0;
+
+    sscanf(string, "%1[+-]", sign);
+    if ( sscanf(string, "%d", &bness) != 1 ) {
+        sign[0] = '!';
+    }
+    sscanf(string, "%*d%1[%]", perc);
+
+    return (struct brightness_cmd ){ .bness = bness
+                                   , .sign = sign[0]
+                                   , .perc = perc[0] == '%' };
+}
+
+unsigned
+bl_calc (struct brightness_cmd cmd, unsigned cur, unsigned max) {
+
+    if ( cmd.perc ) {
+        cmd.bness = cmd.bness * (signed )max / 100;
     }
 
-    return (unsigned )(bness + sign * (signed )cur);
+    return (unsigned )(cmd.bness + (cmd.sign != '!') * (signed )cur);
 }
 
 void
@@ -69,11 +86,11 @@ main (signed argc, const char * argv []) {
     dev = dev ? dev : D_DEV;
 
     const char * thresh_top = 0;
-    thresh_top = getenv("BACKLIGHT_THRESHOLD_TOP");
+    thresh_top = getenv("BACKLIGHT_THRESHOLD_MAX");
     thresh_top = thresh_top ? thresh_top : THRESH_TOP;
 
     const char * thresh_bot = 0;
-    thresh_bot = getenv("BACKLIGHT_THRESHOLD_BOT");
+    thresh_bot = getenv("BACKLIGHT_THRESHOLD_MIN");
     thresh_bot = thresh_bot ? thresh_bot : THRESH_BOT;
 
     size_t blen = 33 + strlen(dev);
@@ -110,18 +127,21 @@ main (signed argc, const char * argv []) {
         }
     }
 
-    char sign [] = { 0, 0 }, perc [] = { 0, 0 };
-    signed bness = 0;
-    sscanf(argv[1], "%1[+-]", sign);
-    if ( sscanf(argv[1], "%d", &bness) != 1 ) {
+    struct brightness_cmd cmd = bl_cmd_parse(argv[1]);
+    if ( cmd.sign == '!' ) {
         fputs(USAGE_STR, stderr);
         status = EXIT_FAILURE;
         goto cleanup;
     }
 
-    sscanf(argv[1], "%*d%1[%]", perc);
+    unsigned ciel = bl_calc(bl_cmd_parse(thresh_top), 0, max),
+             floo = bl_calc(bl_cmd_parse(thresh_bot), 0, max);
 
-    unsigned nbness = bl_calc(bness, sign[0], perc[0] == '%', cur, max);
+    unsigned nbness = bl_calc(cmd, cur, max);
+
+    nbness = nbness > ciel ? ciel :
+             nbness < floo ? floo : nbness;
+
     bl_set(bpath, nbness);
 
     cleanup:

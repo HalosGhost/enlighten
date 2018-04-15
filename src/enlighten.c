@@ -55,7 +55,8 @@ bl_calc (struct brightness_cmd cmd, unsigned cur, unsigned max) {
         cmd.bness = cmd.bness * (signed )max / 100;
     }
 
-    return (unsigned )(cmd.bness + (cmd.sign != '!') * (signed )cur);
+    bool sign = cmd.sign == '-' || cmd.sign == '+';
+    return (unsigned )(cmd.bness + sign * (signed )cur);
 }
 
 void

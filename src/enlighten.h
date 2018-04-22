@@ -45,7 +45,7 @@ struct brightness_cmd
 bl_cmd_parse (const char *);
 
 unsigned
-bl_calc (struct brightness_cmd, unsigned, unsigned);
+bl_calc (struct brightness_cmd, unsigned, unsigned, unsigned);
 
 void
 bl_list (const char *);

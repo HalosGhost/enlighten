@@ -40,23 +40,26 @@ bl_cmd_parse (const char * string) {
     sscanf(string, "%1[+-]", sign);
     if ( sscanf(string, "%d", &bness) != 1 ) {
         sign[0] = '!';
-    }
-    sscanf(string, "%*d%1[%]", perc);
+    } sscanf(string, "%*d%1[%]", perc);
 
     return (struct brightness_cmd ){ .bness = bness
                                    , .sign = sign[0]
-                                   , .perc = perc[0] == '%' };
+                                   , .perc = perc[0] == '%'
+                                   };
 }
 
 unsigned
-bl_calc (struct brightness_cmd cmd, unsigned cur, unsigned max) {
+bl_calc (struct brightness_cmd cmd, unsigned cur, unsigned min, unsigned max) {
 
     if ( cmd.perc ) {
         cmd.bness = cmd.bness * (signed )max / 100;
     }
 
     bool sign = cmd.sign == '-' || cmd.sign == '+';
-    return (unsigned )(cmd.bness + sign * (signed )cur);
+    signed res = cmd.bness + sign * (signed )cur;
+
+    return res > (signed )max ? max :
+           res < (signed )min ? min : (unsigned )res;
 }
 
 void
@@ -114,8 +117,10 @@ main (signed argc, const char * argv []) {
     snprintf(bpath, blen, BASEPATH "%s/brightness", dev);
     snprintf(mpath, mlen, BASEPATH "%s/max_brightness", dev);
 
-    unsigned cur = bl_get(bpath), max = bl_get(mpath);
+    unsigned cur = 0, max = 0;
     if ( argc < 2 ) {
+        cur = bl_get(bpath);
+        max = bl_get(mpath);
         printf("%u / %u (%u%%)\n", cur, max, cur * 100 / max);
         goto cleanup;
     } else {
@@ -128,6 +133,11 @@ main (signed argc, const char * argv []) {
         }
     }
 
+    if ( !cur || !max ) {
+        cur = bl_get(bpath);
+        max = bl_get(mpath);
+    }
+
     struct brightness_cmd cmd = bl_cmd_parse(argv[1]);
     if ( cmd.sign == '!' ) {
         fputs(USAGE_STR, stderr);
@@ -135,13 +145,10 @@ main (signed argc, const char * argv []) {
         goto cleanup;
     }
 
-    unsigned ciel = bl_calc(bl_cmd_parse(thresh_top), 0, max),
-             floo = bl_calc(bl_cmd_parse(thresh_bot), 0, max);
+    unsigned ciel = bl_calc(bl_cmd_parse(thresh_top), 0, 0, max),
+             floo = bl_calc(bl_cmd_parse(thresh_bot), 0, 0, ciel);
 
-    unsigned nbness = bl_calc(cmd, cur, max);
-
-    nbness = nbness > ciel ? ciel :
-             nbness < floo ? floo : nbness;
+    unsigned nbness = bl_calc(cmd, cur, floo, ciel);
 
     bl_set(bpath, nbness);
 

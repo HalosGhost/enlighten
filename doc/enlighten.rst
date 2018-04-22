@@ -26,7 +26,7 @@ list
 ``[+-]<#>[%]``
     Adjust the current brightness to ``#``.
     If a sign (``+`` or ``-``) is specified, adjust relative to the current brightness.
-    If ``%`` is specifiec, treat ``#`` as a percent of the maximum.
+    If ``%`` is specified, treat ``#`` as a percent of the maximum.
 
 Environment Variables
 ---------------------

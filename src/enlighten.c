@@ -65,8 +65,6 @@ bl_calc (struct brightness_cmd cmd, unsigned cur, unsigned min, unsigned max) {
 void
 bl_list (const char * devpath) {
 
-    if ( !devpath ) { return; }
-
     DIR * dir = opendir(devpath);
 
     if ( dir ) {
@@ -89,6 +87,11 @@ main (signed argc, const char * argv []) {
     dev = getenv("BACKLIGHT_DEVICE");
     dev = dev ? dev : D_DEV;
 
+    const char * devpath = 0;
+    devpath = getenv("BACKLIGHT_SEARCH_PATH");
+    devpath = devpath ? devpath : BASEPATH;
+    size_t pathlen = strlen(devpath) + 1;
+
     const char * thresh_top = 0;
     thresh_top = getenv("BACKLIGHT_THRESHOLD_MAX");
     thresh_top = thresh_top ? thresh_top : THRESH_TOP;
@@ -97,13 +100,13 @@ main (signed argc, const char * argv []) {
     thresh_bot = getenv("BACKLIGHT_THRESHOLD_MIN");
     thresh_bot = thresh_bot ? thresh_bot : THRESH_BOT;
 
-    size_t blen = 33 + strlen(dev);
+    size_t blen = pathlen + strlen(dev) + sizeof "/brightness";
     char * bpath = malloc(blen);
     if ( !bpath ) {
         fputs(FAILED_TO "allocate space for brightness path\n", stderr);
     }
 
-    size_t mlen = 37 + strlen(dev);
+    size_t mlen = pathlen + strlen(dev) + sizeof "/max_brightness";
     char * mpath = malloc(mlen);
     if ( !mpath ) {
         fputs(FAILED_TO "allocate space for max brightness path\n", stderr);
@@ -114,8 +117,8 @@ main (signed argc, const char * argv []) {
         goto cleanup;
     }
 
-    snprintf(bpath, blen, BASEPATH "%s/brightness", dev);
-    snprintf(mpath, mlen, BASEPATH "%s/max_brightness", dev);
+    snprintf(bpath, blen, "%s/%s/brightness", devpath, dev);
+    snprintf(mpath, mlen, "%s/%s/max_brightness", devpath, dev);
 
     unsigned cur = 0, max = 0;
     if ( argc < 2 ) {
@@ -128,7 +131,7 @@ main (signed argc, const char * argv []) {
             fputs(USAGE_STR, stderr);
             goto cleanup;
         } else if ( argv[1][0] == 'l' ) {
-            bl_list(BASEPATH);
+            bl_list(devpath);
             goto cleanup;
         }
     }

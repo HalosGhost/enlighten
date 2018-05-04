@@ -10,7 +10,7 @@
 
 /* Configuration */
 #define D_DEV    "intel_backlight"
-#define BASEPATH "/sys/class/backlight/"
+#define BASEPATH "/sys/class/backlight"
 
 #define THRESH_TOP "100%"
 #define THRESH_BOT "0"

@@ -3,8 +3,11 @@
 usage () {
     printf "Usage: ./configure [options]\n\n"
     printf "Options:\n"
-    printf "  --device='name'   Backlight device name (default: intel_backlight)\n"
-    printf "  --reset-config    Reset configuration to the defaults\n"
+    printf "  --device='name'       Backlight device name (default: intel_backlight)\n"
+    printf "  --devpath='path'      Backlight device search path (default: /sys/class/backlight)\n"
+    printf "  --thresh-top='spec'   Maximum brightness threshold (default: 100%%)\n"
+    printf "  --thresh-bot='spec'   Minimum brightness threshold (default: 0)\n"
+    printf "  --reset-config        Reset configuration to the defaults\n"
 }
 
 update () {
@@ -13,6 +16,9 @@ update () {
 
 default_config () {
     update D_DEV 'intel_backlight'
+    update BASEPATH "/sys/class/backlight"
+    update THRESH_TOP "100%"
+    update THRESH_BOT "0"
 }
 
 show_value () {
@@ -21,6 +27,9 @@ show_value () {
 
 show_config () {
     show_value 'Device Name' D_DEV
+    show_value 'Device Search Path' BASEPATH
+    show_value 'Maximum Brightness Threshold' THRESH_TOP
+    show_value 'Minimum Brightness Threshold' THRESH_BOT
 }
 
 check_file () {
@@ -84,6 +93,9 @@ for i in "$@"; do
     case "$i" in
         --help)         usage; exit 0;;
         --device=*)     update D_DEV "${i#*=}"; shift;;
+        --devpath=*)    update BASEPATH "${i#*=}"; shift;;
+        --thresh-top=*) update THRESH_TOP "${i#*=}"; shift;;
+        --thresh-bot=*) update THRESH_BOT "${i#*=}"; shift;;
         --reset-config) default_config;;
     esac
 done

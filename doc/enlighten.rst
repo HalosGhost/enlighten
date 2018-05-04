@@ -31,10 +31,15 @@ list
 Environment Variables
 ---------------------
 
-:program:`enlighten` recognizes three environment variables for runtime configuration:
+:program:`enlighten` recognizes several environment variables for runtime configuration:
 
 BACKLIGHT_DEVICE
     Holds the name of the device to query/adjust.
+
+BACKLIGHT_SEARCH_PATH
+    Holds the path to search for backlight devices.
+    This is useful, for example, so that you can reasonably configure :program:`enlighten` to function for keyboard backlights (often exposed at ``/sys/class/leds``).
+    If not specified, defaults to ``/sys/class/backlight``.
 
 BACKLIGHT_THRESHOLD_MIN
     Holds a value of the form ``<#>[%]`` that represents a saturating minimum brightness.
@@ -44,7 +49,7 @@ BACKLIGHT_THRESHOLD_MIN
 BACKLIGHT_THRESHOLD_MAX
     Holds a value of the form ``<#>[%]`` that represents a saturating maximum brightness.
     If the user-specified value would change the backlight's brightness to be greater than this maximum, the brightness will be set to this maximum instead.
-    If not specified, defaults to "100%".
+    If not specified, defaults to ``100%``.
 
 Examples
 --------

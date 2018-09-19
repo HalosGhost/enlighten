@@ -152,8 +152,19 @@ main (signed argc, const char * argv []) {
              floo = bl_calc(bl_cmd_parse(thresh_bot), 0, 0, ciel);
 
     unsigned nbness = bl_calc(cmd, cur, floo, ciel);
+    bool direction = nbness > cur;
+    unsigned step = (direction ? nbness - cur : cur - nbness) / TRAN_STEPS;
 
-    bl_set(bpath, nbness);
+    for ( size_t i = 0; i < TRAN_STEPS; ++ i ) {
+        if ( direction ) {
+            cur += step;
+        } else {
+            cur -= step;
+        }
+
+        bl_set(bpath, cur);
+        sleep(TRAN_PAUSE);
+    }
 
     cleanup:
         if ( bpath ) { free(bpath); }

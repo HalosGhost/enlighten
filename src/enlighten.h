@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <stdbool.h>
 #include <dirent.h>
+#include <unistd.h>
 
 #define PROGNAME  "enlighten"
 #define FAILED_TO PROGNAME ": Failed to "
@@ -14,6 +15,8 @@
 
 #define THRESH_TOP "100%"
 #define THRESH_BOT "0"
+#define TRAN_STEPS 1
+#define TRAN_PAUSE 0
 
 static const char USAGE_STR [] =
     "Usage: " PROGNAME " <command>\n"

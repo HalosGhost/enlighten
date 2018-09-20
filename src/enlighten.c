@@ -163,7 +163,7 @@ main (signed argc, const char * argv []) {
         }
 
         bl_set(bpath, cur);
-        sleep(TRAN_PAUSE);
+        nanosleep(&pause_time, NULL);
     }
 
     cleanup:

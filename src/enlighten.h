@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <dirent.h>
 #include <unistd.h>
+#include <time.h>
 
 #define PROGNAME  "enlighten"
 #define FAILED_TO PROGNAME ": Failed to "
@@ -17,6 +18,12 @@
 #define THRESH_BOT "0"
 #define TRAN_STEPS 1
 #define TRAN_PAUSE 0
+
+#define _POSIX_C_SOURCE 200809L
+
+static const struct timespec pause_time = {
+    .tv_sec = 0, .tv_nsec = TRAN_PAUSE
+};
 
 static const char USAGE_STR [] =
     "Usage: " PROGNAME " <command>\n"

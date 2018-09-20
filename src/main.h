@@ -20,14 +20,10 @@
 
 #define THRESHOLD_MAX "100%"
 #define THRESHOLD_MIN "0"
-#define TRANSITION_STEPS 1
-#define TRANSITION_PAUSE 0
+#define TRANSITION_STEPS "1"
+#define TRANSITION_PAUSE "0"
 
 #define _POSIX_C_SOURCE 200809L
-
-static const struct timespec pause_time = {
-    .tv_sec = 0, .tv_nsec = TRANSITION_PAUSE
-};
 
 static const char USAGE_STR [] =
     "Usage: " PROGNAME " <command>\n"

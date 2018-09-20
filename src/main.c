@@ -9,8 +9,16 @@ main (signed argc, const char * argv []) {
     READ_ENV(devpath, SEARCH_PATH);
     READ_ENV(thresh_top, THRESHOLD_MAX);
     READ_ENV(thresh_bot, THRESHOLD_MIN);
+    READ_ENV(tran_steps, TRANSITION_STEPS);
+    READ_ENV(tran_pause, TRANSITION_PAUSE);
 
     size_t pathlen = strlen(devpath) + 1;
+
+    unsigned parsed_steps = 0;
+    sscanf(tran_steps, "%u", &parsed_steps);
+
+    unsigned parsed_pause = 0;
+    sscanf(tran_pause, "%u", &parsed_pause);
 
     size_t blen = pathlen + strlen(dev) + sizeof "/brightness";
     char * bpath = malloc(blen);
@@ -65,10 +73,14 @@ main (signed argc, const char * argv []) {
 
     unsigned nbness = bl_calc(cmd, cur, floo, ciel);
     bool direction = nbness > cur;
-    unsigned step = (direction ? nbness - cur : cur - nbness) / TRAN_STEPS;
+    unsigned step = (direction ? nbness - cur : cur - nbness) / parsed_steps;
     step += !step;
 
-    for ( size_t i = 0; i < TRANSITION_STEPS; ++ i ) {
+    const struct timespec pause_time = {
+        .tv_sec = 0, .tv_nsec = parsed_pause
+    };
+
+    for ( size_t i = 0; i < parsed_steps; ++ i ) {
         cur = (direction ? cur + step : cur - step);
         bl_set(bpath, cur);
         if ( (direction ? cur >= nbness : cur <= nbness) ) { break; }

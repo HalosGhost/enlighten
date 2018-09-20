@@ -20,13 +20,13 @@
 
 #define THRESHOLD_MAX "100%"
 #define THRESHOLD_MIN "0"
-#define TRAN_STEPS 1
-#define TRAN_PAUSE 0
+#define TRANSITION_STEPS 1
+#define TRANSITION_PAUSE 0
 
 #define _POSIX_C_SOURCE 200809L
 
 static const struct timespec pause_time = {
-    .tv_sec = 0, .tv_nsec = TRAN_PAUSE
+    .tv_sec = 0, .tv_nsec = TRANSITION_PAUSE
 };
 
 static const char USAGE_STR [] =
@@ -44,10 +44,10 @@ static const char USAGE_STR [] =
     "\nsee " PROGNAME "(1) for more usage information\n"
     ;
 
-#define READ_ENV(envvar, cvar, def) \
+#define READ_ENV(cvar, def) \
 const char * cvar = 0; \
 do { \
-    (cvar) = getenv((envvar)); \
+    (cvar) = getenv("BACKLIGHT_" #def); \
     (cvar) = (cvar) ? (cvar) : (def); \
 } while ( false )
 

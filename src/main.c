@@ -5,10 +5,10 @@ main (signed argc, const char * argv []) {
 
     signed status = EXIT_SUCCESS;
 
-    READ_ENV("BACKLIGHT_DEVICE", dev, DEVICE);
-    READ_ENV("BACKLIGHT_SEARCH_PATH", devpath, SEARCH_PATH);
-    READ_ENV("BACKLIGHT_THRESHOLD_MAX", thresh_top, THRESHOLD_MAX);
-    READ_ENV("BACKLIGHT_THRESHOLD_MIN", thresh_bot, THRESHOLD_MIN);
+    READ_ENV(dev, DEVICE);
+    READ_ENV(devpath, SEARCH_PATH);
+    READ_ENV(thresh_top, THRESHOLD_MAX);
+    READ_ENV(thresh_bot, THRESHOLD_MIN);
 
     size_t pathlen = strlen(devpath) + 1;
 
@@ -68,7 +68,7 @@ main (signed argc, const char * argv []) {
     unsigned step = (direction ? nbness - cur : cur - nbness) / TRAN_STEPS;
     step += !step;
 
-    for ( size_t i = 0; i < TRAN_STEPS; ++ i ) {
+    for ( size_t i = 0; i < TRANSITION_STEPS; ++ i ) {
         cur = (direction ? cur + step : cur - step);
         bl_set(bpath, cur);
         if ( (direction ? cur >= nbness : cur <= nbness) ) { break; }

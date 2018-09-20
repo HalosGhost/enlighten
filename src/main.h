@@ -15,11 +15,11 @@
 #include "enlighten.h"
 
 /* Configuration */
-#define D_DEV    "intel_backlight"
-#define BASEPATH "/sys/class/backlight"
+#define DEVICE "intel_backlight"
+#define SEARCH_PATH "/sys/class/backlight"
 
-#define THRESH_TOP "100%"
-#define THRESH_BOT "0"
+#define THRESHOLD_MAX "100%"
+#define THRESHOLD_MIN "0"
 #define TRAN_STEPS 1
 #define TRAN_PAUSE 0
 
@@ -43,5 +43,12 @@ static const char USAGE_STR [] =
     "  percentage of the max brightness\n"
     "\nsee " PROGNAME "(1) for more usage information\n"
     ;
+
+#define READ_ENV(envvar, cvar, def) \
+const char * cvar = 0; \
+do { \
+    (cvar) = getenv((envvar)); \
+    (cvar) = (cvar) ? (cvar) : (def); \
+} while ( false )
 
 #endif // MAIN_H

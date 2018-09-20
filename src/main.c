@@ -5,22 +5,12 @@ main (signed argc, const char * argv []) {
 
     signed status = EXIT_SUCCESS;
 
-    const char * dev = 0;
-    dev = getenv("BACKLIGHT_DEVICE");
-    dev = dev ? dev : D_DEV;
+    READ_ENV("BACKLIGHT_DEVICE", dev, DEVICE);
+    READ_ENV("BACKLIGHT_SEARCH_PATH", devpath, SEARCH_PATH);
+    READ_ENV("BACKLIGHT_THRESHOLD_MAX", thresh_top, THRESHOLD_MAX);
+    READ_ENV("BACKLIGHT_THRESHOLD_MIN", thresh_bot, THRESHOLD_MIN);
 
-    const char * devpath = 0;
-    devpath = getenv("BACKLIGHT_SEARCH_PATH");
-    devpath = devpath ? devpath : BASEPATH;
     size_t pathlen = strlen(devpath) + 1;
-
-    const char * thresh_top = 0;
-    thresh_top = getenv("BACKLIGHT_THRESHOLD_MAX");
-    thresh_top = thresh_top ? thresh_top : THRESH_TOP;
-
-    const char * thresh_bot = 0;
-    thresh_bot = getenv("BACKLIGHT_THRESHOLD_MIN");
-    thresh_bot = thresh_bot ? thresh_bot : THRESH_BOT;
 
     size_t blen = pathlen + strlen(dev) + sizeof "/brightness";
     char * bpath = malloc(blen);

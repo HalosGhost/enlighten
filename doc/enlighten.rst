@@ -51,6 +51,16 @@ BACKLIGHT_THRESHOLD_MAX
     If the user-specified value would change the backlight's brightness to be greater than this maximum, the brightness will be set to this maximum instead.
     If not specified, defaults to ``100%``.
 
+BACKLIGHT_TRANSITION_STEPS
+    Holds a value of the form ``<#>`` that represents the maximum number of steps to take between the current brightness and the target brightness.
+    :program:`enlighten` will attempt to honor this number of steps as closely as possible without overshooting the target.
+    If the user-specified value results in trying to change the brightness by a fractional value per-step, each step will instead change the brightness by a single point.
+    If not specified, defaults to ``1``.
+
+BACKLIGHT_TRANSITION_PAUSE
+    Holds a value of the form ``<#>`` that represents the amount of time (in nanoseconds) to pause between steps in a transition.
+    If not specified, defaults to ``0``.
+
 Examples
 --------
 

@@ -14,6 +14,7 @@ Features
 * Use percentage of maximum brightness *or* absolute steps!
 * Specify backlight device in an environment variable!
 * Specify minimum and maximum thresholds in environment variables!
+* Specify smooth transition settings in environment variables!
 
 Non-Features
 ------------

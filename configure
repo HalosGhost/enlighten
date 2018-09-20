@@ -7,29 +7,35 @@ usage () {
     printf "  --devpath='path'      Backlight device search path (default: /sys/class/backlight)\n"
     printf "  --thresh-top='spec'   Maximum brightness threshold (default: 100%%)\n"
     printf "  --thresh-bot='spec'   Minimum brightness threshold (default: 0)\n"
+    printf "  --trans-steps='step'  Number of steps to take during a transition (default: 1)\n"
+    printf "  --trans-pause='time'  Amount of time to wait between transition steps (default: 0)\n"
     printf "  --reset-config        Reset configuration to the defaults\n"
 }
 
 update () {
-    sed -i ./src/enlighten.h -re "s/(define $1)(\s*)\"(.*)\"$/\\1\\2\"$2\"/"
+    sed -i ./src/main.h -re "s/(define $1)(\s*)\"(.*)\"$/\\1\\2\"$2\"/"
 }
 
 default_config () {
-    update D_DEV 'intel_backlight'
-    update BASEPATH "/sys/class/backlight"
-    update THRESH_TOP "100%"
-    update THRESH_BOT "0"
+    update DEVICE 'intel_backlight'
+    update SEARCH_PATH "/sys/class/backlight"
+    update THRESHOLD_MAX "100%"
+    update THRESHOLD_MIN "0"
+    update TRANSITION_STEPS "1"
+    update TRANSITION_PAUSE "0"
 }
 
 show_value () {
-    printf "$1: %s\n" "$('grep' "#define $2" ./src/enlighten.h | sed -re "s/#define $2\s*(.*)$/\\1/")"
+    printf "$1: %s\n" "$('grep' "#define $2" ./src/main.h | sed -re "s/#define $2\s*(.*)$/\\1/")"
 }
 
 show_config () {
-    show_value 'Device Name' D_DEV
-    show_value 'Device Search Path' BASEPATH
-    show_value 'Maximum Brightness Threshold' THRESH_TOP
-    show_value 'Minimum Brightness Threshold' THRESH_BOT
+    show_value 'Device Name' DEVICE
+    show_value 'Device Search Path' SEARCH_PATH
+    show_value 'Maximum Brightness Threshold' THRESHOLD_MAX
+    show_value 'Minimum Brightness Threshold' THRESHOLD_MIN
+    show_value 'Steps Per Transition' TRANSITION_STEPS
+    show_value 'Pause Each Transition Step' TRANSITION_PAUSE
 }
 
 check_file () {
@@ -91,12 +97,14 @@ check_deps () {
 
 for i in "$@"; do
     case "$i" in
-        --help)         usage; exit 0;;
-        --device=*)     update D_DEV "${i#*=}"; shift;;
-        --devpath=*)    update BASEPATH "${i#*=}"; shift;;
-        --thresh-top=*) update THRESH_TOP "${i#*=}"; shift;;
-        --thresh-bot=*) update THRESH_BOT "${i#*=}"; shift;;
-        --reset-config) default_config;;
+        --help)          usage; exit 0;;
+        --device=*)      update DEVICE "${i#*=}"; shift;;
+        --devpath=*)     update SEARCH_PATH "${i#*=}"; shift;;
+        --thresh-top=*)  update THRESHOLD_MAX "${i#*=}"; shift;;
+        --thresh-bot=*)  update THRESHOLD_MIN "${i#*=}"; shift;;
+        --trans-steps=*) update TRANSITION_STEPS "${i#*=}"; shift;;
+        --trans-pause=*) update TRANSITION_PAUSE "${i#*=}"; shift;;
+        --reset-config)  default_config;;
     esac
 done
 

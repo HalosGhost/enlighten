@@ -12,8 +12,7 @@
 #include <unistd.h>
 #include <time.h>
 
-#define PROGNAME  "enlighten"
-#define FAILED_TO PROGNAME ": Failed to "
+#include "enlighten.h"
 
 /* Configuration */
 #define D_DEV    "intel_backlight"
@@ -45,6 +44,4 @@ static const char USAGE_STR [] =
     "\nsee " PROGNAME "(1) for more usage information\n"
     ;
 
-#include "enlighten.h"
-
-#endif // ENLIGHTEN_H
+#endif // MAIN_H

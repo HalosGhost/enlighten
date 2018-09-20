@@ -14,7 +14,7 @@ CFLAGS += -Wno-disabled-macro-expansion
 all: dist bin doc
 
 bin: dist
-	@$(CC) $(CFLAGS) src/$(PROGNM).c -o dist/$(PROGNM)
+	@$(CC) $(CFLAGS) src/*.c -o dist/$(PROGNM)
 
 clean:
 	@rm -rf -- dist cov-int $(PROGNM).tgz make.sh ./src/*.plist

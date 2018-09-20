@@ -73,8 +73,8 @@ bl_list (const char * devpath) {
                 printf("%s\t", p->d_name);
             }
         } putchar('\n');
-    }
 
-    closedir(dir);
+        closedir(dir);
+    }
 }
 

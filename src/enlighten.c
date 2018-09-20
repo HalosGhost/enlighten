@@ -154,15 +154,12 @@ main (signed argc, const char * argv []) {
     unsigned nbness = bl_calc(cmd, cur, floo, ciel);
     bool direction = nbness > cur;
     unsigned step = (direction ? nbness - cur : cur - nbness) / TRAN_STEPS;
+    step += !step;
 
     for ( size_t i = 0; i < TRAN_STEPS; ++ i ) {
-        if ( direction ) {
-            cur += step;
-        } else {
-            cur -= step;
-        }
-
+        cur = (direction ? cur + step : cur - step);
         bl_set(bpath, cur);
+        if ( (direction ? cur >= nbness : cur <= nbness) ) { break; }
         nanosleep(&pause_time, NULL);
     }
 

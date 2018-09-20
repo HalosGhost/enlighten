@@ -16,6 +16,7 @@ main (signed argc, const char * argv []) {
 
     unsigned parsed_steps = 0;
     sscanf(tran_steps, "%u", &parsed_steps);
+    parsed_steps += !parsed_steps;
 
     unsigned parsed_pause = 0;
     sscanf(tran_pause, "%u", &parsed_pause);

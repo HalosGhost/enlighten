@@ -18,8 +18,9 @@ main (signed argc, const char * argv []) {
     sscanf(tran_steps, "%u", &parsed_steps);
     parsed_steps += !parsed_steps;
 
-    unsigned parsed_pause = 0;
-    sscanf(tran_pause, "%u", &parsed_pause);
+    long parsed_pause = 0;
+    sscanf(tran_pause, "%ld", &parsed_pause);
+    parsed_pause *= !(parsed_pause < 0);
 
     size_t blen = pathlen + strlen(dev) + sizeof "/brightness";
     char * bpath = malloc(blen);

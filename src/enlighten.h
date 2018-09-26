@@ -11,13 +11,15 @@
 #include <dirent.h>
 #include <unistd.h>
 #include <time.h>
+#include <limits.h>
 
 #define PROGNAME  "enlighten"
 #define FAILED_TO PROGNAME ": Failed to "
 
 struct brightness_cmd {
     signed bness;
-    signed sign: 16, perc: 16;
+    signed sign: sizeof (signed) * CHAR_BIT / 2,
+           perc: sizeof (signed) * CHAR_BIT / 2;
 };
 
 void

@@ -5,7 +5,7 @@ bl_set (const char * path, unsigned level) {
 
     FILE * fp = fopen(path, "w");
     if ( !fp ) {
-        fprintf(stderr, FAILED_TO "open %s for reading: %s\n", path,
+        fprintf(stderr, FAILED_TO "open %s for writing: %s\n", path,
                 strerror(errno));
         exit(EXIT_FAILURE);
     } fprintf(fp, "%u", level); fclose(fp);

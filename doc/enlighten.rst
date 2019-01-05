@@ -28,8 +28,8 @@ list
     If a sign (``+`` or ``-``) is specified, adjust relative to the current brightness.
     If ``%`` is specified, treat ``#`` as a percent of the maximum.
 
-Environment Variables
----------------------
+Configuration
+-------------
 
 :program:`enlighten` recognizes several environment variables for runtime configuration:
 

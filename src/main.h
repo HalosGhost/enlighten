@@ -37,7 +37,8 @@ static const char USAGE_STR [] =
     "  decrement accordingly\n\n"
     "  if % is specified, treat int as a\n"
     "  percentage of the max brightness\n"
-    "\nsee " PROGNAME "(1) for more usage information\n"
+    "\nsee " PROGNAME "(1) for more information\n"
+    "regarding usage and configuration\n"
     ;
 
 #define READ_ENV(cvar, def) \

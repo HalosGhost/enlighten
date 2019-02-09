@@ -65,16 +65,29 @@ bl_calc (struct brightness_cmd cmd, unsigned cur, unsigned min, unsigned max) {
 void
 bl_list (const char * devpath) {
 
-    DIR * dir = opendir(devpath);
+    DIR * devdir = opendir(devpath);
 
-    if ( dir ) {
-        for ( struct dirent * p = readdir(dir); p; p = readdir(dir) ) {
-            if ( p->d_name[0] != '.' ) {
-                printf("%s\t", p->d_name);
+    if ( devdir ) {
+        for ( struct dirent * p = readdir(devdir); p; p = readdir(devdir) ) {
+            size_t candidate_len = strlen(devpath) + strlen(p->d_name) + 2;
+            char * candidate = malloc(candidate_len);
+            snprintf(candidate, candidate_len, "%s/%s", devpath, p->d_name);
+            DIR * candidate_dir = opendir(candidate);
+            if ( candidate_dir ) {
+                unsigned required_files = 0;
+                for ( struct dirent * cp = readdir(candidate_dir); cp; cp = readdir(candidate_dir) ) {
+                    required_files += !strcmp(cp->d_name, "brightness");
+                    required_files += !strcmp(cp->d_name, "max_brightness");
+                }
+                if ( required_files == 2 ) {
+                    printf("%s\t", p->d_name);
+                }
+                closedir(candidate_dir);
             }
+            free(candidate);
         } putchar('\n');
 
-        closedir(dir);
+        closedir(devdir);
     }
 }
 

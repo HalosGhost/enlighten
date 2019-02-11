@@ -72,21 +72,27 @@ bl_list (const char * devpath) {
             size_t candidate_len = strlen(devpath) + strlen(p->d_name) + 2;
             char * candidate = malloc(candidate_len);
             snprintf(candidate, candidate_len, "%s/%s", devpath, p->d_name);
+
             DIR * candidate_dir = opendir(candidate);
             if ( candidate_dir ) {
                 unsigned required_files = 0;
+
                 for ( struct dirent * cp = readdir(candidate_dir); cp; cp = readdir(candidate_dir) ) {
-                    required_files += !strcmp(cp->d_name, "brightness");
-                    required_files += !strcmp(cp->d_name, "max_brightness");
+                    required_files += !strcmp(cp->d_name, "brightness") && cp->d_type == DT_REG;
+                    required_files += !strcmp(cp->d_name, "max_brightness") && cp->d_type == DT_REG;
                 }
+
                 if ( required_files == 2 ) {
                     printf("%s\t", p->d_name);
                 }
+
                 closedir(candidate_dir);
             }
-            free(candidate);
-        } putchar('\n');
 
+            free(candidate);
+        }
+        
+        putchar('\n');
         closedir(devdir);
     }
 }

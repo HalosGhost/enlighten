@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+BASEDIR=$(pwd)
+EXE=$BASEDIR'/dist/enlighten'
+TESTDIR=/tmp/enlighten_testing
+export BACKLIGHT_SEARCH_PATH="$TESTDIR"
+export BACKLIGHT_DEVICE=dev4
+
+# setup the test env
+mkdir -p "$TESTDIR"/dev{1,2,3,4,5}
+echo 0 > "$TESTDIR"/dev2/brightness
+echo 1 > "$TESTDIR"/dev3/max_brightness
+echo 250 > "$TESTDIR"/dev4/brightness
+echo 1347 > "$TESTDIR"/dev4/max_brightness
+mkdir -p "$TESTDIR"/dev5/{max_,}brightness
+touch "$TESTDIR"/notdev
+
+# device detection
+LIST=$(eval "$EXE" l)
+printf 'ignore non-directories: [ %s ]\n' $([[ "$LIST" =~ 'notdev' ]] && echo 'FAIL' || echo 'PASS')
+printf 'ignore empty directories: [ %s ]\n' $([[ "$LIST" =~ 'dev1' ]] && echo 'FAIL' || echo 'PASS')
+printf 'ignore directories without max_brightness: [ %s ]\n' $([[ "$LIST" =~ 'dev2' ]] && echo 'FAIL' || echo 'PASS')
+printf 'ignore directories without brightness: [ %s ]\n' $([[ "$LIST" =~ 'dev3' ]] && echo 'FAIL' || echo 'PASS')
+printf 'ignore directories whose brightness are not regular files: [ %s ]\n' $([[ "$LIST" =~ 'dev5' ]] && echo 'FAIL' || echo 'PASS')
+printf 'detect directories with both brightness files: [ %s ]\n' $([[ "$LIST" =~ 'dev4' ]] && echo 'PASS' || echo 'FAIL')
+
+# brightness fetching
+GET=$(eval "$EXE")
+printf 'properly fetches brightness: [ %s ]\n' $([[ "$GET" == '250 / 1347 (18%)' ]] && echo 'PASS' || echo 'FAIL')
+
+# brightness manipulation
+#eval "$EXE" 0
+
+rm -r "$TESTDIR"

@@ -16,6 +16,9 @@ all: dist bin doc
 bin: dist
 	@$(CC) $(CFLAGS) src/*.c -o dist/$(PROGNM)
 
+check: bin
+	./test-suite
+
 clean:
 	@rm -rf -- dist cov-int $(PROGNM).tgz make.sh ./src/*.plist
 
@@ -28,7 +31,6 @@ doc: dist
 			-d doctree -E . ../dist $(PROGNM).rst; \
 		rm -r -- doctree; \
 	)
-
 
 cov-build: dist
 	@cov-build --dir cov-int ./make.sh

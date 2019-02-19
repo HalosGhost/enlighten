@@ -29,6 +29,28 @@ GET=$(eval "$EXE")
 printf 'properly fetches brightness: [ %s ]\n' $([[ "$GET" == '250 / 1347 (18%)' ]] && echo 'PASS' || echo 'FAIL')
 
 # brightness manipulation
-#eval "$EXE" 0
+eval "$EXE" 0
+GET=$(eval "$EXE")
+printf 'properly sets brightness: [ %s ]\n' $([[ "$GET" == '0 / 1347 (0%)' ]] && echo 'PASS' || echo 'FAIL')
+
+eval "$EXE" '+500'
+GET=$(eval "$EXE")
+printf 'properly increments brightness: [ %s ]\n' $([[ "$GET" == '500 / 1347 (37%)' ]] && echo 'PASS' || echo 'FAIL')
+
+eval "$EXE" '-100'
+GET=$(eval "$EXE")
+printf 'properly decrements brightness: [ %s ]\n' $([[ "$GET" == '400 / 1347 (29%)' ]] && echo 'PASS' || echo 'FAIL')
+
+eval "$EXE" '50%'
+GET=$(eval "$EXE")
+printf 'properly sets brightness by percent: [ %s ]\n' $([[ "$GET" == '673 / 1347 (49%)' ]] && echo 'PASS' || echo 'FAIL')
+
+eval "$EXE" '+7%'
+GET=$(eval "$EXE")
+printf 'properly increments brightness by percent: [ %s ]\n' $([[ "$GET" == '767 / 1347 (56%)' ]] && echo 'PASS' || echo 'FAIL')
+
+eval "$EXE" '-12%'
+GET=$(eval "$EXE")
+printf 'properly decrements brightness by percent: [ %s ]\n' $([[ "$GET" == '606 / 1347 (44%)' ]] && echo 'PASS' || echo 'FAIL')
 
 rm -r "$TESTDIR"

@@ -53,4 +53,7 @@ eval "$EXE" '-12%'
 GET=$(eval "$EXE")
 printf 'properly decrements brightness by percent: [ %s ]\n' $([[ "$GET" == '606 / 1347 (44%)' ]] && echo 'PASS' || echo 'FAIL')
 
+GET=$(eval "$EXE" h 2>&1)
+printf 'properly gets help output: [ %s ]\n' $([[ "$GET" == 'Usage'* ]] && echo 'PASS' || echo 'FAIL')
+
 rm -r "$TESTDIR"

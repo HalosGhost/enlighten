@@ -17,7 +17,7 @@ bin: dist
 	@$(CC) $(CFLAGS) src/*.c -o dist/$(PROGNM)
 
 check: bin
-	./test-suite
+	@./test-suite
 
 clean:
 	@rm -rf -- dist cov-int $(PROGNM).tgz make.sh ./src/*.plist

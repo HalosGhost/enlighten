@@ -9,9 +9,9 @@ BSHDIR ?= $(DESTDIR)$(PREFIX)/share/bash-completions
 include Makerules
 CFLAGS += -Wno-disabled-macro-expansion
 
-.PHONY: all bin clean clang-analyze cov-build doc install uninstall
+.PHONY: all bin clean scan-build cov-build doc install uninstall
 
-all: dist bin doc
+all: dist bin check doc
 
 bin: dist
 	@$(CC) $(CFLAGS) src/*.c -o dist/$(PROGNM)
@@ -36,8 +36,8 @@ cov-build: dist
 	@cov-build --dir cov-int ./make.sh
 	@tar czvf $(PROGNM).tgz cov-int
 
-clang-analyze:
-	@(pushd ./src; clang-check -analyze ./*.c)
+scan-build:
+	@scan-build --use-cc=$(CC) make bin
 
 install:
 	@install -Dm755 dist/$(PROGNM) $(BINDIR)/$(PROGNM)

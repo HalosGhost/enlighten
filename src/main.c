@@ -50,9 +50,10 @@ main (signed argc, const char * argv []) {
                 target_path = !strncmp(p->d_name, dev, strlen(dev)) ? search_paths[i] : 0;
                 if ( target_path ) { break; }
             }
+
+            closedir(dir);
         }
 
-        closedir(dir);
         if ( target_path ) { break; }
     }
 

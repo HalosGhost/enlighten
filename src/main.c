@@ -14,6 +14,58 @@ main (signed argc, const char * argv []) {
 
     size_t pathlen = strlen(devpath) + 1;
 
+    char * pathcopy = 0, ** search_paths = 0, * mpath = 0, * bpath = 0;
+
+    pathcopy = malloc(pathlen);
+    if ( !pathcopy ) {
+        fputs(FAILED_TO "allocate space for a copy of SEARCH_PATH\n", stderr);
+        goto cleanup;
+    }
+
+    strncpy(pathcopy, devpath, pathlen);
+
+    size_t path_count = 1;
+    for ( char * c = pathcopy; *c; ++ c ) {
+        path_count += *c == ':';
+    }
+
+    search_paths = malloc(sizeof (char *) * path_count);
+    search_paths[path_count - 1] = 0;
+    if ( !search_paths ) {
+        fputs(FAILED_TO "allocate space for the search paths\n", stderr);
+        goto cleanup;
+    }
+
+    search_paths[0] = strtok(pathcopy, ":");
+    for ( size_t i = 1; i < path_count; ++ i ) {
+        search_paths[i] = strtok(0, ":");
+    }
+
+    const char * target_path = 0;
+    for ( size_t i = 0; i < path_count; ++ i ) {
+        DIR * dir = opendir(search_paths[i]);
+
+        if ( dir ) {
+            for ( struct dirent * p = readdir(dir); p; p = readdir(dir) ) {
+                target_path = !strncmp(p->d_name, dev, strlen(dev)) ? search_paths[i] : 0;
+                if ( target_path ) { break; }
+            }
+        }
+
+        closedir(dir);
+        if ( target_path ) { break; }
+    }
+
+    if ( argc == 2 ) {
+        if ( argv[1][0] == 'h' ) {
+            fputs(USAGE_STR, stderr);
+            goto cleanup;
+        } else if ( argv[1][0] == 'l' ) {
+            bl_list(search_paths, path_count);
+            goto cleanup;
+        }
+    }
+
     unsigned parsed_steps = 0;
     sscanf(tran_steps, "%u", &parsed_steps);
     parsed_steps += !parsed_steps;
@@ -22,14 +74,19 @@ main (signed argc, const char * argv []) {
     sscanf(tran_pause, "%ld", &parsed_pause);
     parsed_pause *= !(parsed_pause < 0);
 
+    if ( !target_path ) {
+        fputs(FAILED_TO "find a match for the specified device\n", stderr);
+        goto cleanup;
+    }
+
     size_t blen = pathlen + strlen(dev) + sizeof "/brightness";
-    char * bpath = malloc(blen);
+    bpath = malloc(blen);
     if ( !bpath ) {
         fputs(FAILED_TO "allocate space for brightness path\n", stderr);
     }
 
     size_t mlen = pathlen + strlen(dev) + sizeof "/max_brightness";
-    char * mpath = malloc(mlen);
+    mpath = malloc(mlen);
     if ( !mpath ) {
         fputs(FAILED_TO "allocate space for max brightness path\n", stderr);
     }
@@ -39,8 +96,8 @@ main (signed argc, const char * argv []) {
         goto cleanup;
     }
 
-    snprintf(bpath, blen, "%s/%s/brightness", devpath, dev);
-    snprintf(mpath, mlen, "%s/%s/max_brightness", devpath, dev);
+    snprintf(bpath, blen, "%s/%s/brightness", target_path, dev);
+    snprintf(mpath, mlen, "%s/%s/max_brightness", target_path, dev);
 
     unsigned cur = 0, max = 0;
     if ( argc < 2 ) {
@@ -48,15 +105,7 @@ main (signed argc, const char * argv []) {
         max = bl_get(mpath);
         printf("%u / %u (%u%%)\n", cur, max, cur * 100 / max);
         goto cleanup;
-    } else {
-        if ( argv[1][0] == 'h' ) {
-            fputs(USAGE_STR, stderr);
-            goto cleanup;
-        } else if ( argv[1][0] == 'l' ) {
-            bl_list(devpath);
-            goto cleanup;
-        }
-    }
+    } 
 
     if ( !cur || !max ) {
         cur = bl_get(bpath);
@@ -92,6 +141,8 @@ main (signed argc, const char * argv []) {
     cleanup:
         if ( bpath ) { free(bpath); }
         if ( mpath ) { free(mpath); }
+        if ( pathcopy ) { free(pathcopy); }
+        if ( search_paths ) { free(search_paths); }
         return status;
  }
 

@@ -16,7 +16,7 @@
 
 /* Configuration */
 #define DEVICE "intel_backlight"
-#define SEARCH_PATH "/sys/class/backlight"
+#define SEARCH_PATH "/sys/class/backlight:/sys/class/leds"
 
 #define THRESHOLD_MAX "100%"
 #define THRESHOLD_MIN "0"

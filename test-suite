@@ -3,7 +3,7 @@
 BASEDIR=$(pwd)
 EXE=$BASEDIR'/dist/enlighten'
 TESTDIR=/tmp/enlighten_testing
-export BACKLIGHT_SEARCH_PATH="$TESTDIR"
+export BACKLIGHT_SEARCH_PATH="$TESTDIR:/sys/class/backlight:/sys/class/leds"
 export BACKLIGHT_DEVICE=dev4
 
 # setup the test env
@@ -22,7 +22,7 @@ printf 'ignore empty directories: [ %s ]\n' $([[ "$LIST" =~ 'dev1' ]] && echo 'F
 printf 'ignore directories without max_brightness: [ %s ]\n' $([[ "$LIST" =~ 'dev2' ]] && echo 'FAIL' || echo 'PASS')
 printf 'ignore directories without brightness: [ %s ]\n' $([[ "$LIST" =~ 'dev3' ]] && echo 'FAIL' || echo 'PASS')
 printf 'ignore directories whose brightness are not regular files: [ %s ]\n' $([[ "$LIST" =~ 'dev5' ]] && echo 'FAIL' || echo 'PASS')
-printf 'detect directories with both brightness files: [ %s ]\n' $([[ "$LIST" =~ 'dev4' ]] && echo 'PASS' || echo 'FAIL')
+printf 'detect directories with both brightness files: [ %s ]\n' $([[ "$LIST" == *'dev4'* ]] && echo 'PASS' || echo 'FAIL')
 
 # brightness fetching
 GET=$(eval "$EXE")

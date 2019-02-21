@@ -35,6 +35,6 @@ unsigned
 bl_calc (struct brightness_cmd, unsigned, unsigned, unsigned);
 
 void
-bl_list (const char *);
+bl_list (char *const *, size_t);
 
 #endif // ENLIGHTEN_H

@@ -63,37 +63,48 @@ bl_calc (struct brightness_cmd cmd, unsigned cur, unsigned min, unsigned max) {
 }
 
 void
-bl_list (const char * devpath) {
+bl_list (char *const * search_paths, size_t path_count) {
 
-    DIR * devdir = opendir(devpath);
+    for ( size_t i = 0; i < path_count; ++ i ) {
+        const char * devpath = search_paths[i];
 
-    if ( devdir ) {
-        for ( struct dirent * p = readdir(devdir); p; p = readdir(devdir) ) {
-            size_t candidate_len = strlen(devpath) + strlen(p->d_name) + 2;
-            char * candidate = malloc(candidate_len);
-            snprintf(candidate, candidate_len, "%s/%s", devpath, p->d_name);
+        DIR * devdir = opendir(devpath);
 
-            DIR * candidate_dir = opendir(candidate);
-            if ( candidate_dir ) {
-                unsigned required_files = 0;
+        if ( devdir ) {
+            printf("%s:\n", devpath);
+            bool has_candidates = false;
+            for ( struct dirent * p = readdir(devdir); p; p = readdir(devdir) ) {
+                size_t candidate_len = strlen(devpath) + strlen(p->d_name) + 2;
+                char * candidate = malloc(candidate_len);
+                snprintf(candidate, candidate_len, "%s/%s", devpath, p->d_name);
 
-                for ( struct dirent * cp = readdir(candidate_dir); cp; cp = readdir(candidate_dir) ) {
-                    required_files += !strcmp(cp->d_name, "brightness") && cp->d_type == DT_REG;
-                    required_files += !strcmp(cp->d_name, "max_brightness") && cp->d_type == DT_REG;
+                DIR * candidate_dir = opendir(candidate);
+                if ( candidate_dir ) {
+                    unsigned required_files = 0;
+
+                    for ( struct dirent * cp = readdir(candidate_dir); cp; cp = readdir(candidate_dir) ) {
+                        required_files += !strcmp(cp->d_name, "brightness") && cp->d_type == DT_REG;
+                        required_files += !strcmp(cp->d_name, "max_brightness") && cp->d_type == DT_REG;
+                    }
+
+                    if ( required_files == 2 ) {
+                        has_candidates = true;
+                        printf("    %s\n", p->d_name);
+                    }
+
+                    closedir(candidate_dir);
                 }
 
-                if ( required_files == 2 ) {
-                    printf("%s\t", p->d_name);
-                }
-
-                closedir(candidate_dir);
+                free(candidate);
             }
 
-            free(candidate);
+            if ( !has_candidates ) {
+                puts("    <No valid candidates>");
+            }
+
+            putchar('\n');
+            closedir(devdir);
         }
-        
-        putchar('\n');
-        closedir(devdir);
     }
 }
 

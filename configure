@@ -4,7 +4,7 @@ usage () {
     printf "Usage: ./configure [options]\n\n"
     printf "Options:\n"
     printf "  --device='name'       Backlight device name (default: intel_backlight)\n"
-    printf "  --devpath='path'      Backlight device search path (default: /sys/class/backlight)\n"
+    printf "  --devpath='path'      Backlight device search path (default: /sys/class/backlight:/sys/class/leds)\n"
     printf "  --thresh-top='spec'   Maximum brightness threshold (default: 100%%)\n"
     printf "  --thresh-bot='spec'   Minimum brightness threshold (default: 0)\n"
     printf "  --trans-steps='step'  Number of steps to take during a transition (default: 1)\n"
@@ -18,7 +18,7 @@ update () {
 
 default_config () {
     update DEVICE 'intel_backlight'
-    update SEARCH_PATH "/sys/class/backlight"
+    update SEARCH_PATH "/sys/class/backlight:/sys/class/leds"
     update THRESHOLD_MAX "100%"
     update THRESHOLD_MIN "0"
     update TRANSITION_STEPS "1"

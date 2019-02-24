@@ -37,9 +37,10 @@ BACKLIGHT_DEVICE
     Holds the name of the device to query/adjust.
 
 BACKLIGHT_SEARCH_PATH
-    Holds the path to search for backlight devices.
-    This is useful, for example, so that you can reasonably configure :program:`enlighten` to function for keyboard backlights (often exposed at ``/sys/class/leds``).
-    If not specified, defaults to ``/sys/class/backlight``.
+    Holds a colon-separated list of directories to search for backlight devices.
+    When getting or setting the current backlight state for the device specified in ``BACKLIGHT_DEVICE``, :program:`enlighten` searches the directories in this variable, in-order looking for the first device to match.
+    When listing the devices available, :program:`enlighten` will list each valid candidate device from each directory listed in this variable.
+    If not specified, defaults to ``/sys/class/backlight:/sys/class/leds``.
 
 BACKLIGHT_THRESHOLD_MIN
     Holds a value of the form ``<#>[%]`` that represents a saturating minimum brightness.

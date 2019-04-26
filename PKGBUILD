@@ -16,7 +16,7 @@ sha256sums=('SKIP')
 
 pkgver () {
     cd enlighten
-    printf '0.r%s.%s' "$(git rev-list --count HEAD)" "$(git log -1 --pretty=format:%h)"
+    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 prepare () {

@@ -29,6 +29,11 @@ build () {
     make
 }
 
+check () {
+    cd enlighten
+    make test
+}
+
 package () {
     cd enlighten
     make DESTDIR="$pkgdir" PREFIX="/usr" install

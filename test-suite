@@ -65,5 +65,13 @@ eval "$EXE" '+pants' &> /dev/null
 GET=$(eval "$EXE")
 printf 'ignores basic garbage input: [ %s ]\n' $([[ "$GET" == '0 / 1347 (0%)' ]] && echo 'PASS' || echo 'FAIL')
 
+# garbage environment
+export BACKLIGHT_DEVICE=nonexistant
+GET=$(eval "$EXE" 2>&1)
+printf 'errors on basic garbage device name: [ %s ]\n' $([[ "$GET" =~ "Failed to find a match for the specified device" ]] && echo 'PASS' || echo 'FAIL')
+
+export BACKLIGHT_SEARCH_PATH="$TESTDIR:/sys/class/backlight:/sys/class/leds:"
+GET=$(eval "$EXE" 2>&1)
+printf 'errors on basic garbage environment: [ %s ]\n' $([[ "$GET" == "Usage"* ]] && echo 'PASS' || echo 'FAIL')
 
 rm -r "$TESTDIR"

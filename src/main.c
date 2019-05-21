@@ -43,6 +43,10 @@ main (signed argc, const char * argv []) {
 
     const char * target_path = 0;
     for ( size_t i = 0; i < path_count; ++ i ) {
+        if ( !search_paths[i] ) {
+            continue;
+        }
+
         DIR * dir = opendir(search_paths[i]);
 
         if ( dir ) {

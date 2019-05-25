@@ -5,6 +5,7 @@ LIBDIR ?= $(DESTDIR)$(PREFIX)/lib
 BINDIR ?= $(DESTDIR)$(PREFIX)/bin
 ZSHDIR ?= $(DESTDIR)$(PREFIX)/share/zsh
 BSHDIR ?= $(DESTDIR)$(PREFIX)/share/bash-completions
+MKDIR  ?= mkdir -p
 
 include Makerules
 CFLAGS += -Wno-disabled-macro-expansion
@@ -23,7 +24,7 @@ clean:
 	@rm -rf -- dist cov-int $(PROGNM).tgz make.sh ./src/*.plist
 
 dist:
-	@mkdir -p ./dist
+	@$(MKDIR) ./dist
 
 doc: dist
 	@(cd doc; \

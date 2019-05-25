@@ -62,12 +62,13 @@ main (signed argc, const char * argv []) {
     }
 
     if ( argc == 2 ) {
-        if ( argv[1][0] == 'h' ) {
-            fputs(USAGE_STR, stderr);
-            goto cleanup;
-        } else if ( argv[1][0] == 'l' ) {
-            bl_list(search_paths, path_count);
-            goto cleanup;
+        switch ( argv[1][0] ) {
+            case 'h':
+                fputs(USAGE_STR, stderr);
+                goto cleanup;
+            case 'l':
+                bl_list(search_paths, path_count);
+                goto cleanup;
         }
     }
 

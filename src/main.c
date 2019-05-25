@@ -66,6 +66,12 @@ main (signed argc, const char * argv []) {
             case 'h':
                 fputs(USAGE_STR, stderr);
                 goto cleanup;
+            case 'v':
+                #if !defined(VERSION)
+                #define VERSION "No version information available\n"
+                #endif
+                fputs(VERSION, stderr);
+                goto cleanup;
             case 'l':
                 bl_list(search_paths, path_count);
                 goto cleanup;

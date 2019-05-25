@@ -4,7 +4,7 @@ enlighten
 Synopsis
 --------
 
-**enlighten** [ help | list | [+-]<#>[%] ]
+**enlighten** [ help | list | version | [+-]<#>[%] ]
 
 Description
 -----------
@@ -22,6 +22,9 @@ help
 
 list
     Print a list of known backlight device names.
+
+version
+    Print the version information for :program:`enlighten`.
 
 ``[+-]<#>[%]``
     Adjust the current brightness to ``#``.

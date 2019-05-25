@@ -14,7 +14,7 @@ CFLAGS += -Wno-disabled-macro-expansion
 all: dist bin check doc
 
 bin: dist
-	@$(CC) $(CFLAGS) src/*.c -o dist/$(PROGNM)
+	@$(CC) $(CFLAGS) src/*.c -DVERSION="\"$(VER)\n\"" -o dist/$(PROGNM)
 
 check: bin
 	@./test-suite

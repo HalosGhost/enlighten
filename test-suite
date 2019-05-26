@@ -15,7 +15,7 @@ echo 1347 > "$TESTDIR"/dev4/max_brightness
 mkdir -p "$TESTDIR"/dev5/{max_,}brightness
 touch "$TESTDIR"/notdev
 
-# device detection
+# non-brightness commands (device detection, help and version output)
 LIST=$(eval "$EXE" l)
 printf 'ignore non-directories: [ %s ]\n' $([[ "$LIST" =~ 'notdev' ]] && echo 'FAIL' || echo 'PASS')
 printf 'ignore empty directories: [ %s ]\n' $([[ "$LIST" =~ 'dev1' ]] && echo 'FAIL' || echo 'PASS')
@@ -23,6 +23,12 @@ printf 'ignore directories without max_brightness: [ %s ]\n' $([[ "$LIST" =~ 'de
 printf 'ignore directories without brightness: [ %s ]\n' $([[ "$LIST" =~ 'dev3' ]] && echo 'FAIL' || echo 'PASS')
 printf 'ignore directories whose brightness are not regular files: [ %s ]\n' $([[ "$LIST" =~ 'dev5' ]] && echo 'FAIL' || echo 'PASS')
 printf 'detect directories with both brightness files: [ %s ]\n' $([[ "$LIST" == *'dev4'* ]] && echo 'PASS' || echo 'FAIL')
+
+GET=$(eval "$EXE" h 2>&1)
+printf 'properly gets help output: [ %s ]\n' $([[ "$GET" == 'Usage'* ]] && echo 'PASS' || echo 'FAIL')
+
+GET=$(eval "$EXE" v 2>&1)
+printf 'properly gets version output: [ %s ]\n' $([[ "$GET" == $(git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g') ]] && echo 'PASS' || echo 'FAIL')
 
 # brightness fetching
 GET=$(eval "$EXE")
@@ -53,15 +59,7 @@ eval "$EXE" '-12%'
 GET=$(eval "$EXE")
 printf 'properly decrements brightness by percent: [ %s ]\n' $([[ "$GET" == '606 / 1347 (44%)' ]] && echo 'PASS' || echo 'FAIL')
 
-# misc non-brightness commands
-GET=$(eval "$EXE" h 2>&1)
-printf 'properly gets help output: [ %s ]\n' $([[ "$GET" == 'Usage'* ]] && echo 'PASS' || echo 'FAIL')
-
-GET=$(eval "$EXE" v 2>&1)
-printf 'properly gets version output: [ %s ]\n' $([[ "$GET" == $(git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g') ]] && echo 'PASS' || echo 'FAIL')
-
 # garbage input
-
 eval "$EXE" 0 # reset
 GET=$(eval "$EXE")
 

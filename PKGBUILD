@@ -31,7 +31,7 @@ build () {
 
 check () {
     cd enlighten
-    make test
+    make check
 }
 
 package () {

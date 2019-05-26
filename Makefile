@@ -10,7 +10,7 @@ MKDIR  ?= mkdir -p
 include Makerules
 CFLAGS += -Wno-disabled-macro-expansion
 
-.PHONY: all bin clean test scan-build cov-build doc install uninstall
+.PHONY: all bin clean scan-build cov-build doc install uninstall
 
 all: dist bin check doc
 
@@ -36,9 +36,6 @@ doc: dist
 cov-build: dist
 	@cov-build --dir cov-int ./make.sh
 	@tar czvf $(PROGNM).tgz cov-int
-
-test::
-	@./test-suite
 
 scan-build:
 	@scan-build --use-cc=$(CC) make bin

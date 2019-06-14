@@ -10,7 +10,7 @@ MKDIR  ?= mkdir -p
 include Makerules
 CFLAGS += -Wno-disabled-macro-expansion
 
-.PHONY: all bin clean scan-build cov-build complexity doc install uninstall
+.PHONY: all bin clean scan-build cov-build complexity doc verify install uninstall
 
 all: dist bin check doc
 
@@ -42,6 +42,9 @@ complexity: bin
 
 scan-build:
 	@scan-build --use-cc=$(CC) make bin
+
+verify:
+	@frama-c $(FMFLAGS) src/*.c
 
 install:
 	@install -Dm755 dist/$(PROGNM) $(BINDIR)/$(PROGNM)

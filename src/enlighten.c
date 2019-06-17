@@ -73,7 +73,8 @@ bl_list (char *const * search_paths, size_t path_count) {
         if ( devdir ) {
             printf("%s:\n", devpath);
             bool has_candidates = false;
-            for ( struct dirent * p = readdir(devdir); p; p = readdir(devdir) ) {
+            struct dirent * p = 0;
+            while ( (p = readdir(devdir)) ) {
                 size_t candidate_len = strlen(devpath) + strlen(p->d_name) + 2;
                 char * candidate = malloc(candidate_len);
                 snprintf(candidate, candidate_len, "%s/%s", devpath, p->d_name);
@@ -82,7 +83,8 @@ bl_list (char *const * search_paths, size_t path_count) {
                 if ( candidate_dir ) {
                     unsigned required_files = 0;
 
-                    for ( struct dirent * cp = readdir(candidate_dir); cp; cp = readdir(candidate_dir) ) {
+                    struct dirent * cp = 0;
+                    while ( (cp = readdir(candidate_dir)) ) {
                         required_files += !strcmp(cp->d_name, "brightness") && cp->d_type == DT_REG;
                         required_files += !strcmp(cp->d_name, "max_brightness") && cp->d_type == DT_REG;
                     }

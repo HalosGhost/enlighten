@@ -50,7 +50,8 @@ main (signed argc, const char * argv []) {
         DIR * dir = opendir(search_paths[i]);
 
         if ( dir ) {
-            for ( struct dirent * p = readdir(dir); p; p = readdir(dir) ) {
+            struct dirent * p = 0;
+            while ( (p = readdir(dir)) ) {
                 target_path = !strncmp(p->d_name, dev, strlen(dev)) ? search_paths[i] : 0;
                 if ( target_path ) { break; }
             }

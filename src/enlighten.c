@@ -49,7 +49,7 @@ bl_cmd_parse (const char * string) {
 }
 
 unsigned
-bl_calc (struct brightness_cmd cmd, unsigned cur, unsigned min, unsigned max) {
+bl_calc (struct brightness_cmd cmd, unsigned cur, unsigned max, unsigned bot, unsigned top) {
 
     if ( cmd.perc ) {
         cmd.bness = cmd.bness * (signed )max / 100;
@@ -58,8 +58,8 @@ bl_calc (struct brightness_cmd cmd, unsigned cur, unsigned min, unsigned max) {
     bool sign = cmd.sign == '-' || cmd.sign == '+';
     signed res = cmd.bness + sign * (signed )cur;
 
-    return res > (signed )max ? max :
-           res < (signed )min ? min : (unsigned )res;
+    return res > (signed )top ? top :
+           res < (signed )bot ? bot : (unsigned )res;
 }
 
 void

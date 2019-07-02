@@ -132,10 +132,10 @@ main (signed argc, const char * argv []) {
         goto cleanup;
     }
 
-    unsigned ciel = bl_calc(bl_cmd_parse(thresh_top), 0, max, 0, max),
-             floo = bl_calc(bl_cmd_parse(thresh_bot), 0, max, 0, ciel);
+    unsigned top = bl_calc(bl_cmd_parse(thresh_top), 0, max, 0, max),
+             bot = bl_calc(bl_cmd_parse(thresh_bot), 0, max, 0, top);
 
-    unsigned nbness = bl_calc(cmd, cur, max, floo, ciel);
+    unsigned nbness = bl_calc(cmd, cur, max, bot, top);
     bool direction = nbness > cur;
     unsigned step = (direction ? nbness - cur : cur - nbness) / parsed_steps;
     step += !step;

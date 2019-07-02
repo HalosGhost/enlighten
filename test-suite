@@ -5,7 +5,6 @@ EXE=$BASEDIR'/dist/enlighten'
 TESTDIR=/tmp/enlighten_testing
 export BACKLIGHT_SEARCH_PATH="$TESTDIR:/sys/class/backlight:/sys/class/leds"
 export BACKLIGHT_DEVICE=dev4
-
 declare -i TESTCOUNT
 declare -i TESTSFAILED
 
@@ -73,6 +72,19 @@ printf 'properly increments brightness by percent: [ %s ]\n' $([[ "$GET" == '767
 eval "$EXE" '-12%'
 GET=$(eval "$EXE")
 printf 'properly decrements brightness by percent: [ %s ]\n' $([[ "$GET" == '606 / 1347 (44%)' ]] && PASS || FAIL)
+
+# thresholds
+export BACKLIGHT_THRESHOLD_MIN='1'
+export BACKLIGHT_THRESHOLD_MAX='25%'
+eval "$EXE" '75%'
+GET=$(eval "$EXE")
+printf 'respects threshold maximum: [ %s ]\n' $([[ "$GET" == '336 / 1347 (24%)' ]] && PASS || FAIL)
+
+eval "$EXE" '0'
+GET=$(eval "$EXE")
+printf 'respects threshold minimum: [ %s ]\n' $([[ "$GET" == '1 / 1347 (0%)' ]] && PASS || FAIL)
+unset BACKLIGHT_THRESHOLD_MIN
+unset BACKLIGHT_THRESHOLD_MAX
 
 # garbage input
 eval "$EXE" 0 # reset

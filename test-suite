@@ -86,6 +86,20 @@ printf 'respects threshold minimum: [ %s ]\n' $([[ "$GET" == '1 / 1347 (0%)' ]] 
 unset BACKLIGHT_THRESHOLD_MIN
 unset BACKLIGHT_THRESHOLD_MAX
 
+# transitions
+eval "$EXE" 0 # reset
+export BACKLIGHT_TRANSITION_STEPS=20
+export BACKLIGHT_TRANSITION_PAUSE=50000000
+START=$(date +'%s')
+eval "$EXE" '+10%'
+STOP=$(date +'%s')
+printf 'respects transition steps and pause: [ %s ]\n' $([[ $((STOP - START)) == 1 ]] && PASS || FAIL)
+
+unset START
+unset STOP
+unset BACKLIGHT_TRANSITION_STEPS
+unset BACKLIGHT_TRANSITION_PAUSE
+
 # garbage input
 eval "$EXE" 0 # reset
 GET=$(eval "$EXE")

@@ -17,15 +17,27 @@ echo 1347 > "$TESTDIR"/dev4/max_brightness
 mkdir -p "$TESTDIR"/dev5/{max_,}brightness
 touch "$TESTDIR"/notdev
 
+echo 0 > "$TESTDIR"/TESTCOUNT
+echo 0 > "$TESTDIR"/TESTSFAILED
+
 # helper functions
 FAIL() {
-    ((TESTCOUNT++))
-    ((TESTSFAILED++))
+    declare -i count
+    count=$(<"$TESTDIR"/TESTCOUNT)
+    count=$((count + 1))
+    echo "$count" > "$TESTDIR"/TESTCOUNT
+    declare -i failed
+    failed=$(<"$TESTDIR"/TESTSFAILED)
+    failed=$((failed + 1))
+    echo "$failed" > "$TESTDIR"/TESTSFAILED
     echo 'FAIL'
 }
 
 PASS() {
-    ((TESTCOUNT++))
+    declare -i count
+    count=$(<"$TESTDIR"/TESTCOUNT)
+    count=$((count + 1))
+    echo "$count" > "$TESTDIR"/TESTCOUNT
     echo 'PASS'
 }
 
@@ -118,6 +130,11 @@ GET=$(eval "$EXE" 2>&1)
 printf 'errors on basic garbage device name: [ %s ]\n' $([[ "$GET" =~ "Failed to find a match for the specified device" ]] && PASS || FAIL)
 
 # summary
-#printf '\n%d of %d tests failed\n' "$TESTSFAILED" "$TESTCOUNT"
+count=$(<"$TESTDIR"/TESTCOUNT)
+failed=$(<"$TESTDIR"/TESTSFAILED)
+
+printf '\n%d of %d tests failed\n' "$failed" "$count"
 
 rm -r "$TESTDIR"
+
+exit "$failed"

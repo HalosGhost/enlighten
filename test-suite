@@ -121,9 +121,13 @@ GET=$(eval "$EXE")
 printf 'ignores basic garbage input: [ %s ]\n' $([[ "$GET" == '0 / 1347 (0%)' ]] && PASS || FAIL)
 
 # garbage environment
-export BACKLIGHT_SEARCH_PATH="$TESTDIR:/sys/class/backlight:/sys/class/leds:"
+export BACKLIGHT_SEARCH_PATH="$TESTDIR:::/sys/class/backlight::/sys/class/leds:"
 GET=$(eval "$EXE")
 printf 'ignores empty paths in SEARCH_PATH: [ %s ]\n' $([[ "$GET" == '0 / 1347 (0%)' ]] && PASS || FAIL)
+
+eval "$EXE" l &> /dev/null
+GET=$?
+printf 'ignores errant, repeated delimiters in SEARCH_PATH: [ %s ]\n' $([[ "$GET" == 0 ]] && PASS || FAIL)
 
 export BACKLIGHT_DEVICE=nonexistant
 GET=$(eval "$EXE" 2>&1)

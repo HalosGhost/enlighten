@@ -25,9 +25,12 @@ main (signed argc, const char * argv []) {
     strncpy(pathcopy, devpath, pathlen);
 
     size_t path_count = 1;
-    for ( char * c = pathcopy; *c; ++ c ) {
-        path_count += *c == ':';
+    char * c = strtok(pathcopy, ":");
+    while ( c && (c = strtok(0, ":")) ) {
+        path_count++;
     }
+
+    strncpy(pathcopy, devpath, pathlen);
 
     search_paths = malloc(sizeof (char *) * path_count);
     search_paths[path_count - 1] = 0;

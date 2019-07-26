@@ -133,6 +133,20 @@ export BACKLIGHT_DEVICE=nonexistant
 GET=$(eval "$EXE" 2>&1)
 printf 'errors on basic garbage device name: [ %s ]\n' $([[ "$GET" =~ "Failed to find a match for the specified device" ]] && PASS || FAIL)
 
+unset BACKLIGHT_DEVICE
+unset BACKLIGHT_SEARCH_PATH
+
+export BACKLIGHT_DEVICE=""
+eval "$EXE" &> /dev/null
+GET=$?
+printf 'ignores empty DEVICE: [ %s ]\n' $([[ "$GET" == 0 ]] && PASS || FAIL)
+
+unset BACKLIGHT_DEVICE
+export BACKLIGHT_SEARCH_PATH=":::"
+eval "$EXE" l &> /dev/null
+GET=$?
+printf 'ignores (effectively) empty SEARCH_PATH: [ %s ]\n' $([[ "$GET" == 0 ]] && PASS || FAIL)
+
 # summary
 count=$(<"$TESTDIR"/TESTCOUNT)
 failed=$(<"$TESTDIR"/TESTSFAILED)

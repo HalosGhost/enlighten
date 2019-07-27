@@ -24,8 +24,13 @@ main (signed argc, const char * argv []) {
 
     strncpy(pathcopy, devpath, pathlen);
 
-    size_t path_count = 1;
     char * c = strtok(pathcopy, ":");
+    if ( !c ) {
+        fputs(PROGNAME ": SEARCH_PATH is effectively empty\n", stderr);
+        goto cleanup;
+    }
+
+    size_t path_count = 1;
     while ( c && (c = strtok(0, ":")) ) {
         path_count++;
     }

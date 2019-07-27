@@ -16,6 +16,11 @@ main (signed argc, const char * argv []) {
 
     char * pathcopy = 0, ** search_paths = 0, * mpath = 0, * bpath = 0;
 
+    if ( !dev || !*dev ) {
+        fputs(PROGNAME ": DEVICE is empty", stderr);
+        goto cleanup;
+    }
+
     pathcopy = malloc(pathlen);
     if ( !pathcopy ) {
         fputs(FAILED_TO "allocate space for a copy of SEARCH_PATH\n", stderr);

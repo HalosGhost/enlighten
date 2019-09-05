@@ -49,4 +49,9 @@ do { \
     (cvar) = (cvar) ? (cvar) : (def); \
 } while ( false )
 
+#define PRINT_ENV(def) \
+do {\
+    printf("BACKLIGHT_" #def ": %s\n", getenv("BACKLIGHT_" #def)); \
+} while ( false )
+
 #endif // MAIN_H

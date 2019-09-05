@@ -77,6 +77,14 @@ main (signed argc, const char * argv []) {
 
     if ( argc == 2 ) {
         switch ( argv[1][0] ) {
+            case 'e':
+                PRINT_ENV(DEVICE);
+                PRINT_ENV(SEARCH_PATH);
+                PRINT_ENV(THRESHOLD_MAX);
+                PRINT_ENV(THRESHOLD_MIN);
+                PRINT_ENV(TRANSITION_STEPS);
+                PRINT_ENV(TRANSITION_PAUSE);
+                goto cleanup;
             case 'h':
                 fputs(USAGE_STR, stderr);
                 goto cleanup;

@@ -18,7 +18,7 @@ Options
     Display current brightness information (formatted: ``cur / max (perc)``)
 
 env
-    Print a list of all environment variables (see :section:`Configuration`) :program:`enlighten` reads and their values.
+    Print a list of all environment variables (see `Configuration`_) :program:`enlighten` reads and their values.
 
 help
     Print help summary and exit.

@@ -30,6 +30,7 @@ static const char USAGE_STR [] =
     PROGNAME " -- a very small backlight controller\n\n"
     "Commands:\n"
     "  <nothing>      get current brightness\n"
+    "  env            print environment configuration\n"
     "  help           print this help and exit\n"
     "  list           get a list of devices\n"
     "  version        print version information and exit\n"

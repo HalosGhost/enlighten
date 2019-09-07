@@ -16,6 +16,7 @@ Features
 * Specify a list of directories to search for candidate devices in an environment variable!
 * Specify minimum and maximum thresholds in environment variables!
 * Specify smooth transition settings in environment variables!
+* List all relevent environment configuration at runtime!
 
 Non-Features
 ------------

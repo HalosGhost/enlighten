@@ -51,8 +51,6 @@ do { \
 } while ( false )
 
 #define PRINT_ENV(def) \
-do {\
-    printf("BACKLIGHT_" #def ": %s\n", getenv("BACKLIGHT_" #def)); \
-} while ( false )
+    printf("BACKLIGHT_" #def ": %s\n", getenv("BACKLIGHT_" #def))
 
 #endif // MAIN_H

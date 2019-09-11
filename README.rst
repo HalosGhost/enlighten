@@ -41,7 +41,12 @@ Manual installation:
 Replace <device> with the name of your backlight device. It should be listed in
 :code:`/sys/class/backlight`. Intel graphics for example calls the device :code:`intel_backlight`.
 
-Arch Linux package: https://aur.archlinux.org/packages/enlighten-git/
+Packages
+--------
+
+If you would like to package :code:`enlighten`, please feel free to contact me and I will be happy to help, include the source files for the packaging, and list the official link here:
+
+* `Arch Linux (AUR) <https://aur.archlinux.org/packages/enlighten-git/>`_
 
 Run as regular user
 -------------------

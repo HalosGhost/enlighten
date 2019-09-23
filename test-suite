@@ -5,8 +5,6 @@ EXE=$BASEDIR'/dist/enlighten'
 TESTDIR=/tmp/enlighten_testing
 export BACKLIGHT_SEARCH_PATH="$TESTDIR:/sys/class/backlight:/sys/class/leds"
 export BACKLIGHT_DEVICE=dev4
-declare -i TESTCOUNT
-declare -i TESTSFAILED
 
 # setup the test env
 mkdir -p "$TESTDIR"/dev{1,2,3,4,5}

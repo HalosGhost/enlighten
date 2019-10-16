@@ -1,4 +1,12 @@
-CC = clang
-CFLAGS ?= -g -ggdb -O3 -fPIE -pie -flto -D_FORTIFY_SOURCE=2 -fstack-protector-strong --param=ssp-buffer-size=1 -Weverything -Wno-reserved-id-macro -Werror -std=gnu18 -fsanitize=undefined -fsanitize-trap=undefined -Wl,-z,relro,-z,now
+CC ?= clang
+CFLAGS ?= -g -ggdb -O3 -fPIE -flto -fstack-protector-strong --param=ssp-buffer-size=1 -Wno-reserved-id-macro -Wall -Wextra -Wpedantic -Werror -std=gnu18 -fsanitize=undefined
 VER = `git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'`
 FMFLAGS = -wp -then -wp -wp-rte
+
+ifneq ($(CC), tcc)
+CFLAGS += -pie -D_FORTIFY_SOURCE=2 -Wl,-z,relro,-z,now
+endif
+
+ifeq ($(CC), clang)
+CFLAGS += -Weverything -fsanitize-trap=undefined
+endif

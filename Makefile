@@ -8,7 +8,6 @@ BSHDIR ?= $(DESTDIR)$(PREFIX)/share/bash-completions
 MKDIR  ?= mkdir -p
 
 include Makerules
-CFLAGS += -Wno-disabled-macro-expansion
 
 .PHONY: all bin clean scan-build cov-build complexity doc verify install uninstall
 

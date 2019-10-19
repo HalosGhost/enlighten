@@ -10,3 +10,5 @@ endif
 ifeq ($(CC), clang)
 CFLAGS += -Weverything -fsanitize-trap=undefined
 endif
+
+CFLAGS += -Wno-disabled-macro-expansion

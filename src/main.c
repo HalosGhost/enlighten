@@ -27,7 +27,7 @@ main (signed argc, const char * argv []) {
         goto cleanup;
     }
 
-    strncpy(pathcopy, devpath, pathlen);
+    strcpy(pathcopy, devpath);
 
     char * c = strtok(pathcopy, ":");
     if ( !c ) {

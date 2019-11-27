@@ -9,7 +9,7 @@ MKDIR  ?= mkdir -p
 
 include Makerules
 
-.PHONY: all bin clean scan-build cov-build complexity doc verify install uninstall
+.PHONY: all bin clean scan-build cov-build complexity debug doc verify install uninstall
 
 all: dist bin check doc
 
@@ -24,6 +24,9 @@ clean:
 
 dist:
 	@$(MKDIR) ./dist
+
+debug:
+	@gdb --tui ./dist/$(PROGNM)
 
 doc: dist
 	@(cd doc; \

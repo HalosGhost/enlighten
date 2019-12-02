@@ -34,18 +34,22 @@ bl_get (const char * path) {
 struct brightness_cmd
 bl_cmd_parse (const char * string) {
 
-    char sign [] = { 0, 0 }, perc [] = { 0, 0 };
+    char sign [] = { 0, 0 };
+    if ( sscanf(string, "%1[=+-]", sign) == 1 ) { ++ string; }
+
     signed bness = 0;
+    if ( sscanf(string, "%d", &bness) != 1 ) { sign[0] = '!'; }
 
-    sscanf(string, "%1[+-]", sign);
-    if ( sscanf(string, "%d", &bness) != 1 ) {
-        sign[0] = '!';
-    } sscanf(string, "%*d%1[%]", perc);
+    if ( *sign == '-' ) { bness *= -1; }
 
-    return (struct brightness_cmd ){ .bness = bness
-                                   , .sign = sign[0]
-                                   , .perc = perc[0] == '%'
-                                   };
+    char perc [] = { 0, 0 };
+    sscanf(string, "%*d%1[%]", perc);
+
+    return (struct brightness_cmd ){
+        .bness = bness,
+        .sign = *sign,
+        .perc = *perc == '%'
+    };
 }
 
 unsigned

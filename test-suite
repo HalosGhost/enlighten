@@ -62,9 +62,13 @@ GET=$(eval "$EXE")
 printf 'properly fetches brightness: [ %s ]\n' $([[ "$GET" == '250 / 1347 (18%)' ]] && PASS || FAIL)
 
 # brightness manipulation
+eval "$EXE" '=7%'
+GET=$(eval "$EXE")
+printf 'properly sets brightness (with =): [ %s ]\n' $([[ "$GET" == '94 / 1347 (6%)' ]] && PASS || FAIL)
+
 eval "$EXE" 0
 GET=$(eval "$EXE")
-printf 'properly sets brightness: [ %s ]\n' $([[ "$GET" == '0 / 1347 (0%)' ]] && PASS || FAIL)
+printf 'properly sets brightness (without =): [ %s ]\n' $([[ "$GET" == '0 / 1347 (0%)' ]] && PASS || FAIL)
 
 eval "$EXE" '+500'
 GET=$(eval "$EXE")

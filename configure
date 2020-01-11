@@ -44,19 +44,19 @@ check_file () {
     [[ -f "$1" ]] || exit 1
 }
 
-def_cflags=(-g -O3 -fPIE -pie -D_FORTIFY_SOURCE=2 -fstack-protector-strong
-            --param=ssp-buffer-size=1 -Weverything -Werror -std=c11 -ggdb
-            -flto -fsanitize=undefined -fsanitize-trap=undefined
-            -Wl,-z,relro,-z,now -Wno-disabled-macro-expansion)
+def_cflags=(-g -O3 -fPIE -pie '-D_FORTIFY_SOURCE=2' -fstack-protector-strong
+            '--param=ssp-buffer-size=1' -Weverything -Werror '-std=c11' -ggdb
+            -flto '-fsanitize=undefined' '-fsanitize-trap=undefined'
+            '-Wl,-z,relro,-z,now' -Wno-disabled-macro-expansion)
 
 check_deps () {
     CC=${CC:-clang}
 
-    pushd ./src &> /dev/null
+    pushd ./src &> /dev/null || exit 1
     hdrs=($($CC -M enlighten.c | sed -e 's|.*:||' -e 's|\\||' | tr -d '\n'))
 
     len=0
-    for i in make "$CC" mkdir install rm "${hdrs[@]}" "$def_cflags[@]"; do
+    for i in make "$CC" mkdir install rm "${hdrs[@]}" "${def_cflags[@]}"; do
         if (( "${#i}" > len )); then
             len="${#i}"
         fi
@@ -92,7 +92,7 @@ check_deps () {
         [[ "$fc" != 0 ]] && exit 1
     done
 
-    popd &> /dev/null
+    popd &> /dev/null || exit 1
 }
 
 for i in "$@"; do

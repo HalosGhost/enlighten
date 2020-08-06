@@ -1,0 +1,84 @@
+#!/usr/bin/env sh
+
+CONFIG_KEYS=$(sed -E -n 's/^#define ([^_][^(]+) .+/\1/p' src/defaults.h)
+
+len=$(mktemp)
+printf '%d\n' 0 > "$len"
+printf '%s' "$CONFIG_KEYS" | while IFS= read -r key; do
+    IFS= read -r printlen <"$len"
+    if [ "$((${#key}))" -gt "$printlen" ]; then
+        printf '%d\n' "${#key}" > "$len"
+    fi
+done
+IFS= read -r printlen <"$len"
+
+show_config () {
+    printf '%s' "$CONFIG_KEYS" | while IFS= read -r key; do
+        DEFAULT=$(sed -E -n "s/^#define $key (.+)/\1/p" './src/defaults.h')
+        CONFIGD=$(sed -E -n "s/^#define $key (.+)/\1/p" './src/config.h')
+
+        printf '%s = ' "$key"
+        if [ -n "$CONFIGD" ]; then
+            printf '%s (%s)' "$CONFIGD" "$DEFAULT"
+        else
+            printf '%s' "$DEFAULT"
+        fi; printf '\n'
+    done
+}
+
+optusage () {
+    printf '  --%-*s\t%s\n' "$printlen" "$1" "$2"
+}
+
+usage () {
+    printf 'Usage: %s [options]\n\nOptions:\n' "$0"
+    printf '%s' "$CONFIG_KEYS" | while IFS= read -r key; do
+        OPT=$(printf '%s' "$key" | tr '[:upper:]_' '[:lower:]-')
+        HELP=$(sed -E -n "s|^#ifndef $key // (.+)|\1|p" './src/defaults.h')
+
+        optusage "$OPT" "$HELP"
+    done
+
+    optusage 'reset-config' 'reset configuration to the defaults'
+    optusage 'help' 'print this help and exit'
+}
+
+update () {
+    sed -i ./src/config.h -re "s|^(//)?#define $1 \"(.*)\"$|#define $1 \"$2\"|"
+}
+
+restore_default_config () {
+    sed -re 's|^#define [^_][^()]+ .+|//&|' -i ./src/config.h
+}
+
+for setting in "$@"; do
+    OPT=$(printf '%s' "$setting" | cut -d' ' -f1 | sed -E -n 's/--//p')
+    KEY=$(printf '%s' "$OPT" | sed -E -n 's/([^=]+)=.*/\1/p' | tr '[:lower:]-' '[:upper:]_')
+    VAL=$(printf '%s' "$OPT" | sed -E -n 's/.*=([^[:space:]]+)/\1/p')
+
+    case "$OPT" in
+        *'='*)
+            case "$CONFIG_KEYS" in
+                *"$KEY"*) update "$KEY" "$VAL";;
+                *)
+                    printf 'unrecognized option: --%s\n' "$OPT"
+                    exit
+                    ;;
+            esac;;
+        help)
+            usage
+            exit
+            ;;
+        reset-config)
+            restore_default_config
+            show_config
+            exit
+            ;;
+        *)
+            printf 'unrecognized option: --%s\n' "$OPT"
+            exit
+            ;;
+    esac
+done
+
+show_config

@@ -4,7 +4,7 @@ enlighten
 Synopsis
 --------
 
-**enlighten** [ help | list | version | [=+-]<#>[%] ]
+**enlighten** [ env | help | list | version | [=+-]<#>[%] ]
 
 Description
 -----------
@@ -56,7 +56,7 @@ Put more plainly:
 * a ``number`` consists of one (or more) of any of the 10 standard decimal Arabic numerals
 * an ``action`` is one of a literal equals sign, a literal plus sign, or a literal minus sign
 * a ``brightness`` is a ``number`` followed by an optional, literal percent sign
-* a ``command`` is an optional ``action`` followed by a brightness
+* a ``command`` is an optional ``action`` followed by a ``brightness``
 
 Configuration
 -------------

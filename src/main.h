@@ -13,15 +13,7 @@
 #include <time.h>
 
 #include "enlighten.h"
-
-/* Configuration */
-#define DEVICE "intel_backlight"
-#define SEARCH_PATH "/sys/class/backlight:/sys/class/leds"
-
-#define THRESHOLD_MAX "100%"
-#define THRESHOLD_MIN "0"
-#define TRANSITION_STEPS "1"
-#define TRANSITION_PAUSE "0"
+#include "config.h"
 
 #define _POSIX_C_SOURCE 200809L
 

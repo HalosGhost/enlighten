@@ -52,7 +52,7 @@ GET=$(eval "$EXE" h 2>&1)
 printf 'properly gets help output: [ %s ]\n' $([[ "$GET" == 'Usage'* ]] && PASS || FAIL)
 
 GET=$(eval "$EXE" v 2>&1)
-printf 'properly gets version output: [ %s ]\n' $([[ "$GET" == $(git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g') ]] && PASS || FAIL)
+printf 'properly gets version output: [ %s ]\n' $([[ "$GET" == 'v'* ]] && PASS || FAIL)
 
 GET=$(eval "$EXE" e 2>&1)
 printf 'properly gets environment configuration: [ %s ]\n' $([[ "$GET" =~ 'BACKLIGHT_' ]] && PASS || FAIL)

@@ -1,112 +1,84 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
+
+CONFIG_KEYS=$(sed -E -n 's/^#define ([^_][^(]+) .+/\1/p' src/defaults.h)
+
+len=$(mktemp)
+printf '%d\n' 0 > "$len"
+printf '%s' "$CONFIG_KEYS" | while IFS= read -r key; do
+    IFS= read -r printlen <"$len"
+    if [ "$((${#key}))" -gt "$printlen" ]; then
+        printf '%d\n' "${#key}" > "$len"
+    fi
+done
+IFS= read -r printlen <"$len"
+
+show_config () {
+    printf '%s' "$CONFIG_KEYS" | while IFS= read -r key; do
+        DEFAULT=$(sed -E -n "s/^#define $key (.+)/\1/p" './src/defaults.h')
+        CONFIGD=$(sed -E -n "s/^#define $key (.+)/\1/p" './src/config.h')
+
+        printf '%s = ' "$key"
+        if [ -n "$CONFIGD" ]; then
+            printf '%s (%s)' "$CONFIGD" "$DEFAULT"
+        else
+            printf '%s' "$DEFAULT"
+        fi; printf '\n'
+    done
+}
+
+optusage () {
+    printf '  --%-*s\t%s\n' "$printlen" "$1" "$2"
+}
 
 usage () {
-    printf "Usage: ./configure [options]\n\n"
-    printf "Options:\n"
-    printf "  --device='name'       Backlight device name (default: intel_backlight)\n"
-    printf "  --devpath='path'      Backlight device search path (default: /sys/class/backlight:/sys/class/leds)\n"
-    printf "  --thresh-top='spec'   Maximum brightness threshold (default: 100%%)\n"
-    printf "  --thresh-bot='spec'   Minimum brightness threshold (default: 0)\n"
-    printf "  --trans-steps='step'  Number of steps to take during a transition (default: 1)\n"
-    printf "  --trans-pause='time'  Amount of time to wait between transition steps (default: 0)\n"
-    printf "  --reset-config        Reset configuration to the defaults\n"
+    printf 'Usage: %s [options]\n\nOptions:\n' "$0"
+    printf '%s' "$CONFIG_KEYS" | while IFS= read -r key; do
+        OPT=$(printf '%s' "$key" | tr '[:upper:]_' '[:lower:]-')
+        HELP=$(sed -E -n "s|^#ifndef $key // (.+)|\1|p" './src/defaults.h')
+
+        optusage "$OPT" "$HELP"
+    done
+
+    optusage 'reset-config' 'reset configuration to the defaults'
+    optusage 'help' 'print this help and exit'
 }
 
 update () {
-    sed -i ./src/main.h -re "s/(define $1)(\s*)\"(.*)\"$/\\1\\2\"$2\"/"
+    sed -i ./src/config.h -re "s|^(//)?#define $1 \"(.*)\"$|#define $1 \"$2\"|"
 }
 
-default_config () {
-    update DEVICE 'intel_backlight'
-    update SEARCH_PATH "/sys/class/backlight:/sys/class/leds"
-    update THRESHOLD_MAX "100%"
-    update THRESHOLD_MIN "0"
-    update TRANSITION_STEPS "1"
-    update TRANSITION_PAUSE "0"
+restore_default_config () {
+    sed -re 's|^#define [^_][^()]+ .+|//&|' -i ./src/config.h
 }
 
-show_value () {
-    printf "$1: %s\n" "$('grep' "#define $2" ./src/main.h | sed -re "s/#define $2\s*(.*)$/\\1/")"
-}
+for setting in "$@"; do
+    OPT=$(printf '%s' "$setting" | cut -d' ' -f1 | sed -E -n 's/--//p')
+    KEY=$(printf '%s' "$OPT" | sed -E -n 's/([^=]+)=.*/\1/p' | tr '[:lower:]-' '[:upper:]_')
+    VAL=$(printf '%s' "$OPT" | sed -E -n 's/.*=([^[:space:]]+)/\1/p')
 
-show_config () {
-    show_value 'Device Name' DEVICE
-    show_value 'Device Search Path' SEARCH_PATH
-    show_value 'Maximum Brightness Threshold' THRESHOLD_MAX
-    show_value 'Minimum Brightness Threshold' THRESHOLD_MIN
-    show_value 'Steps Per Transition' TRANSITION_STEPS
-    show_value 'Pause Each Transition Step' TRANSITION_PAUSE
-}
-
-check_file () {
-    [[ -f "$1" ]] && fnd='\x1b[32mY' || fnd='\x1b[31m\x1b[1mN';
-    printf 'Found %-*s\t[ %b\x1b[0m ]\n' "$2" "$1:" "$fnd"
-    [[ -f "$1" ]] || exit 1
-}
-
-def_cflags=(-g -O3 -fPIE -pie '-D_FORTIFY_SOURCE=2' -fstack-protector-strong
-            '--param=ssp-buffer-size=1' -Weverything -Werror '-std=c11' -ggdb
-            -flto '-fsanitize=undefined' '-fsanitize-trap=undefined'
-            '-Wl,-z,relro,-z,now' -Wno-disabled-macro-expansion)
-
-check_deps () {
-    CC=${CC:-clang}
-
-    pushd ./src &> /dev/null || exit 1
-    hdrs=($($CC -M enlighten.c | sed -e 's|.*:||' -e 's|\\||' | tr -d '\n'))
-
-    len=0
-    for i in make "$CC" mkdir install rm "${hdrs[@]}" "${def_cflags[@]}"; do
-        if (( "${#i}" > len )); then
-            len="${#i}"
-        fi
-    done
-
-    for i in make "$(which "$CC")" mkdir install rm; do
-        [[ "$(which "$i" &> /dev/null; echo $?)" == 0 ]] && {
-            check_file "$(which "$i")" "$len"
-        } || check_file "$i" "$len"
-    done
-
-    for i in "${hdrs[@]}"; do
-        if [[ "$i" != *'.h' || "$i" == *'bits'* ]]; then
-            continue
-        fi
-
-        fh=$($CC -c -o tm -x c - <<< "#include \"$i\"" &> /dev/null; echo $?)
-        [[ "$fh" == 0 ]] && {
-            fnd='\x1b[32mY'; [[ -f "tm" ]] && rm -- tm
-        } || fnd='\x1b[31m\x1b[1mN'
-
-        printf 'Found %-*s\t[ %b\x1b[0m ]\n' "$len" "$i:" "$fnd"
-        [[ "$fh" != 0 ]] && exit 1
-    done
-
-    for i in "${def_cflags[@]}"; do
-        fc=$($CC -c -o tm -x c - "$i" <<< "#include <stdio.h>" &> /dev/null; echo $?)
-        [[ "$fc" == 0 ]] && {
-            fnd='\x1b[32mY'; [[ -f "tm" ]] && rm -- tm
-        } || fnd='\x1b[31m\x1b[1mN'
-
-        printf 'Found %-*s\t[ %b\x1b[0m ]\n' "$len" "$i:" "$fnd"
-        [[ "$fc" != 0 ]] && exit 1
-    done
-
-    popd &> /dev/null || exit 1
-}
-
-for i in "$@"; do
-    case "$i" in
-        --help)          usage; exit 0;;
-        --device=*)      update DEVICE "${i#*=}"; shift;;
-        --devpath=*)     update SEARCH_PATH "${i#*=}"; shift;;
-        --thresh-top=*)  update THRESHOLD_MAX "${i#*=}"; shift;;
-        --thresh-bot=*)  update THRESHOLD_MIN "${i#*=}"; shift;;
-        --trans-steps=*) update TRANSITION_STEPS "${i#*=}"; shift;;
-        --trans-pause=*) update TRANSITION_PAUSE "${i#*=}"; shift;;
-        --reset-config)  default_config;;
+    case "$OPT" in
+        *'='*)
+            case "$CONFIG_KEYS" in
+                *"$KEY"*) update "$KEY" "$VAL";;
+                *)
+                    printf 'unrecognized option: --%s\n' "$OPT"
+                    exit
+                    ;;
+            esac;;
+        help)
+            usage
+            exit
+            ;;
+        reset-config)
+            restore_default_config
+            show_config
+            exit
+            ;;
+        *)
+            printf 'unrecognized option: --%s\n' "$OPT"
+            exit
+            ;;
     esac
 done
 
 show_config
-check_deps

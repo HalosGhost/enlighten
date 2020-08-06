@@ -1,7 +1,7 @@
 PROGNM = enlighten
 
 CC ?= gcc
-CFLAGS ?= -g -ggdb -O3 -fPIE -flto -fstack-protector-strong --param=ssp-buffer-size=1 -Wno-reserved-id-macro -Wall -Wextra -Wpedantic -Werror -std=gnu18 -fsanitize=undefined
+CFLAGS ?= -O2 -fPIE -flto -fstack-protector-strong --param=ssp-buffer-size=1 -Wno-reserved-id-macro -Wall -Wextra -Wpedantic -Werror -std=gnu18 -fsanitize=undefined
 VER = `git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'`
 FMFLAGS = -wp -then -wp -wp-rte
 
@@ -15,5 +15,15 @@ CFLAGS += -Weverything -fsanitize-trap=undefined
 endif
 
 CFLAGS += -Wno-disabled-macro-expansion
+
+BLDRT ?= dist
+CONFIGURATION ?= debug
+ifneq ($(CONFIGURATION), release)
+BLDDIR ?= $(BLDRT)/debug
+CFLAGS += -g -ggdb -O0 -U_FORTIFY_SOURCE
+else
+BLDDIR ?= $(BLDRT)/release
+CFLAGS += -DNDEBUG -O3
+endif
 
 include mke/rules

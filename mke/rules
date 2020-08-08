@@ -12,7 +12,7 @@ RUNCMD ?= ./$(BLDDIR)/$(PROGNM)
 all: $(BLDDIR) bin check doc
 
 bin: $(BLDDIR)
-	@$(CC) $(CFLAGS) $(LDFLAGS) src/*.c -DVERSION="\"$(VER)\n\"" -o $(BLDDIR)/$(PROGNM)
+	@$(CC) $(CFLAGS) $(LDFLAGS) $(SOURCES) -DVERSION="\"$(VER)\n\"" -o $(BLDDIR)/$(PROGNM)
 
 check: bin
 	@(if [ -x ./test-suite ]; then RUNCMD=$(RUNCMD) ./test-suite; else true; fi)

@@ -3,8 +3,9 @@
 CONFIG_KEYS=$(sed -E -n 's/^#define ([^_][^(]+) .+/\1/p' src/defaults.h)
 
 len=$(mktemp)
-printf '%d\n' 0 > "$len"
-printf '%s' "$CONFIG_KEYS" | while IFS= read -r key; do
+_firstlen='reset-config'
+printf '%d\n' "${#_firstlen}" > "$len"
+printf '%s\n' "$CONFIG_KEYS" | while IFS= read -r key; do
     IFS= read -r printlen <"$len"
     if [ "$((${#key}))" -gt "$printlen" ]; then
         printf '%d\n' "${#key}" > "$len"
@@ -13,7 +14,7 @@ done
 IFS= read -r printlen <"$len"
 
 show_config () {
-    printf '%s' "$CONFIG_KEYS" | while IFS= read -r key; do
+    printf '%s\n' "$CONFIG_KEYS" | while IFS= read -r key; do
         DEFAULT=$(sed -E -n "s/^#define $key (.+)/\1/p" './src/defaults.h')
         CONFIGD=$(sed -E -n "s/^#define $key (.+)/\1/p" './src/config.h')
 
@@ -32,7 +33,7 @@ optusage () {
 
 usage () {
     printf 'Usage: %s [options]\n\nOptions:\n' "$0"
-    printf '%s' "$CONFIG_KEYS" | while IFS= read -r key; do
+    printf '%s\n' "$CONFIG_KEYS" | while IFS= read -r key; do
         OPT=$(printf '%s' "$key" | tr '[:upper:]_' '[:lower:]-')
         HELP=$(sed -E -n "s|^#ifndef $key // (.+)|\1|p" './src/defaults.h')
 

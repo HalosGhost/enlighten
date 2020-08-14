@@ -28,3 +28,7 @@ CFLAGS += -DNDEBUG -O3
 endif
 
 include mke/rules
+
+ifneq ($(wildcard ./overrides.mk),)
+include ./overrides.mk
+endif

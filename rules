@@ -1,11 +1,13 @@
 PREFIX ?= /usr/local
-DOCDIR ?= $(DESTDIR)$(PREFIX)/share/man
-LIBDIR ?= $(DESTDIR)$(PREFIX)/lib
-BINDIR ?= $(DESTDIR)$(PREFIX)/bin
-ZSHDIR ?= $(DESTDIR)$(PREFIX)/share/zsh
-BSHDIR ?= $(DESTDIR)$(PREFIX)/share/bash-completions
+PKGDIR ?= $(DESTDIR)$(PREFIX)
+DOCDIR ?= $(PKGDIR)/share/man
+LIBDIR ?= $(PKGDIR)/lib
+BINDIR ?= $(PKGDIR)/bin
+ZSHDIR ?= $(PKGDIR)/share/zsh
+BSHDIR ?= $(PKGDIR)/share/bash-completions
 MKDIR  ?= mkdir -p
 RUNCMD ?= ./$(BLDDIR)/$(PROGNM)
+SOURCES ?= $(wildcard src/*.c)
 
 .PHONY: all bin clean scan-build cov-build complexity debug doc verify install uninstall
 
@@ -51,8 +53,14 @@ verify:
 
 install:
 	@install -Dm755 $(BLDDIR)/$(PROGNM) $(BINDIR)/$(PROGNM)
-	@install -Dm755 $(BLDDIR)/$(PROGNM).1 $(DOCDIR)/man1/$(PROGNM).1
+	@(for i in $(shell basename $(wildcard $(BLDDIR)/*.[0-9])); do \
+		section="$${i: -1}"; \
+		install -Dm755 $(BLDDIR)/"$$i" $(DOCDIR)/man"$$section"/"$$i"; \
+	done)
 
-uninstall:
+uninstall: doc
 	@rm -f -- $(BINDIR)/$(PROGNM)
-	@rm -f -- $(DOCDIR)/$(PROGNM).1
+	@(for i in $(shell basename $(wildcard $(BLDDIR)/*.[0-9])); do \
+		section="$${i: -1}"; \
+		rm -f -- $(DOCDIR)/man"$$section"/"$$i"; \
+	done)

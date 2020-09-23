@@ -1,6 +1,19 @@
 #!/usr/bin/env sh
 
-CONFIG_KEYS=$(sed -E -n 's/^#define ([^_][^(]+) .+/\1/p' src/defaults.h)
+DEFAULT_FILE=./src/defaults.h
+CONFIG_FILE=./src/config.h
+
+if [ ! -e "$DEFAULT_FILE" ]; then
+   printf 'No default configuration header found\n'
+   exit
+fi
+
+if [ ! -e "$CONFIG_FILE" ]; then
+   printf 'No configuration header found\n'
+   exit
+fi
+
+CONFIG_KEYS=$(sed -E -n 's/^#define ([^_][^(]+) .+/\1/p' "$DEFAULT_FILE")
 
 len=$(mktemp)
 _firstlen='reset-config'
@@ -15,8 +28,8 @@ IFS= read -r printlen <"$len"
 
 show_config () {
     printf '%s\n' "$CONFIG_KEYS" | while IFS= read -r key; do
-        DEFAULT=$(sed -E -n "s/^#define $key (.+)/\1/p" './src/defaults.h')
-        CONFIGD=$(sed -E -n "s/^#define $key (.+)/\1/p" './src/config.h')
+        DEFAULT=$(sed -E -n "s/^#define $key (.+)/\1/p" "$DEFAULT_FILE")
+        CONFIGD=$(sed -E -n "s/^#define $key (.+)/\1/p" "$CONFIG_FILE")
 
         printf '%s = ' "$key"
         if [ -n "$CONFIGD" ]; then
@@ -35,7 +48,7 @@ usage () {
     printf 'Usage: %s [options]\n\nOptions:\n' "$0"
     printf '%s\n' "$CONFIG_KEYS" | while IFS= read -r key; do
         OPT=$(printf '%s' "$key" | tr '[:upper:]_' '[:lower:]-')
-        HELP=$(sed -E -n "s|^#ifndef $key // (.+)|\1|p" './src/defaults.h')
+        HELP=$(sed -E -n "s|^#ifndef $key // (.+)|\1|p" "$DEFAULT_FILE")
 
         optusage "$OPT" "$HELP"
     done
@@ -45,11 +58,11 @@ usage () {
 }
 
 update () {
-    sed -i ./src/config.h -re "s|^(//)?#define $1 \"(.*)\"$|#define $1 \"$2\"|"
+    sed -i "$CONFIG_FILE" -re "s|^(//)?#define $1 \"(.*)\"$|#define $1 \"$2\"|"
 }
 
 restore_default_config () {
-    sed -re 's|^#define [^_][^()]+ .+|//&|' -i ./src/config.h
+    sed -re 's|^#define [^_][^()]+ .+|//&|' -i "$CONFIG_FILE"
 }
 
 for setting in "$@"; do

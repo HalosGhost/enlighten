@@ -8,8 +8,10 @@ BSHDIR ?= $(PKGDIR)/share/bash-completions
 MKDIR  ?= mkdir -p
 RUNCMD ?= ./$(BLDDIR)/$(PROGNM)
 SOURCES ?= $(wildcard src/*.c)
+WATCHDIRS ?= src doc
+WATCHRULE ?= all run
 
-.PHONY: all bin clean scan-build cov-build complexity debug doc verify install uninstall
+.PHONY: all bin clean scan-build cov-build complexity debug doc verify watch install uninstall
 
 all: $(BLDDIR) bin check doc
 
@@ -50,6 +52,9 @@ scan-build:
 
 verify:
 	@frama-c $(FMFLAGS) src/*.c
+
+watch:
+	@find $(WATCHDIRS) | entr -r make $(WATCHRULE)
 
 install:
 	@install -Dm755 $(BLDDIR)/$(PROGNM) $(BINDIR)/$(PROGNM)

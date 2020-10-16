@@ -29,8 +29,6 @@ Non-Features
 Install
 -------
 
-Dependencies: clang
-
 Manual installation:
 ::
 

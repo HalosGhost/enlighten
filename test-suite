@@ -1,4 +1,6 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
+
+# shellcheck disable=SC2046
 
 EXE="$(pwd)/$RUNCMD"
 TESTDIR=/tmp/enlighten_testing
@@ -6,12 +8,15 @@ export BACKLIGHT_SEARCH_PATH="$TESTDIR:/sys/class/backlight:/sys/class/leds"
 export BACKLIGHT_DEVICE=dev4
 
 # setup the test env
-mkdir -p "$TESTDIR"/dev{1,2,3,4,5}
+for i in $(seq 1 5); do
+    mkdir -p "$TESTDIR"/dev"$i"
+done
 echo 0 > "$TESTDIR"/dev2/brightness
 echo 1 > "$TESTDIR"/dev3/max_brightness
 echo 250 > "$TESTDIR"/dev4/brightness
 echo 1347 > "$TESTDIR"/dev4/max_brightness
-mkdir -p "$TESTDIR"/dev5/{max_,}brightness
+mkdir -p "$TESTDIR"/dev5/max_brightness
+mkdir -p "$TESTDIR"/dev5/brightness
 touch "$TESTDIR"/notdev
 
 echo 0 > "$TESTDIR"/TESTCOUNT
@@ -19,86 +24,101 @@ echo 0 > "$TESTDIR"/TESTSFAILED
 
 # helper functions
 FAIL() {
-    declare -i count
-    count=$(<"$TESTDIR"/TESTCOUNT)
+    count=0
+    count=$(cat "$TESTDIR"/TESTCOUNT)
     count=$((count + 1))
     echo "$count" > "$TESTDIR"/TESTCOUNT
-    declare -i failed
-    failed=$(<"$TESTDIR"/TESTSFAILED)
+    failed=0
+    failed=$(cat "$TESTDIR"/TESTSFAILED)
     failed=$((failed + 1))
     echo "$failed" > "$TESTDIR"/TESTSFAILED
     echo 'FAIL'
 }
 
 PASS() {
-    declare -i count
-    count=$(<"$TESTDIR"/TESTCOUNT)
+    count=0
+    count=$(cat "$TESTDIR"/TESTCOUNT)
     count=$((count + 1))
     echo "$count" > "$TESTDIR"/TESTCOUNT
     echo 'PASS'
 }
 
+contains() {
+    case "$1" in
+        *"$2"*) echo 0;;
+        *)      echo 1;;
+    esac
+}
+
+try() {
+    if test "$@"; then
+        PASS
+    else
+        FAIL
+    fi
+}
+
 # non-brightness commands (device detection, help and version output)
 LIST=$(eval "$EXE" l)
-printf 'ignore non-directories: [ %s ]\n' $([[ "$LIST" =~ 'notdev' ]] && FAIL || PASS)
-printf 'ignore empty directories: [ %s ]\n' $([[ "$LIST" =~ 'dev1' ]] && FAIL || PASS)
-printf 'ignore directories without max_brightness: [ %s ]\n' $([[ "$LIST" =~ 'dev2' ]] && FAIL || PASS)
-printf 'ignore directories without brightness: [ %s ]\n' $([[ "$LIST" =~ 'dev3' ]] && FAIL || PASS)
-printf 'ignore directories whose brightness are not regular files: [ %s ]\n' $([[ "$LIST" =~ 'dev5' ]] && FAIL || PASS)
-printf 'detect directories with both brightness files: [ %s ]\n' $([[ "$LIST" == *'dev4'* ]] && PASS || FAIL)
+printf 'ignore non-directories: [ %s ]\n' $(try $(contains "$LIST" 'notdev') -eq 1)
+printf 'ignore empty directories: [ %s ]\n' $(try $(contains "$LIST" 'dev1') -eq 1)
+printf 'ignore directories without max_brightness: [ %s ]\n' $(try $(contains "$LIST" 'dev2') -eq 1)
+printf 'ignore directories without brightness: [ %s ]\n' $(try $(contains "$LIST" 'dev3') -eq 1)
+printf 'ignore directories whose brightness are not regular files: [ %s ]\n' $(try $(contains "$LIST" 'dev5') -eq 1)
+printf 'detect directories with both brightness files: [ %s ]\n' $(try $(contains "$LIST" 'dev4') -eq 0)
 
 GET=$(eval "$EXE" h 2>&1)
-printf 'properly gets help output: [ %s ]\n' $([[ "$GET" == 'Usage'* ]] && PASS || FAIL)
+printf 'properly gets help output: [ %s ]\n' $(try $(contains "$GET" 'Usage') -eq 0)
 
 GET=$(eval "$EXE" v 2>&1)
-printf 'properly gets version output: [ %s ]\n' $([[ "$GET" == 'v'* ]] && PASS || FAIL)
+printf 'properly gets version output: [ %s ]\n' $(try $(contains "$GET" 'v') -eq 0)
 
 GET=$(eval "$EXE" e 2>&1)
-printf 'properly gets environment configuration: [ %s ]\n' $([[ "$GET" =~ 'BACKLIGHT_' ]] && PASS || FAIL)
+printf 'properly gets environment configuration: [ %s ]\n' $(try $(contains "$GET" 'BACKLIGHT_') -eq 0)
 
 # brightness fetching
 GET=$(eval "$EXE")
-printf 'properly fetches brightness: [ %s ]\n' $([[ "$GET" == '250 / 1347 (18%)' ]] && PASS || FAIL)
+printf 'properly fetches brightness: [ %s ]\n' $(try "$GET" = '250 / 1347 (18%)')
 
 # brightness manipulation
 eval "$EXE" '=7%'
 GET=$(eval "$EXE")
-printf 'properly sets brightness (with =): [ %s ]\n' $([[ "$GET" == '94 / 1347 (6%)' ]] && PASS || FAIL)
+printf 'properly sets brightness (with =): [ %s ]\n' $(try "$GET" = '94 / 1347 (6%)')
 
 eval "$EXE" 0
 GET=$(eval "$EXE")
-printf 'properly sets brightness (without =): [ %s ]\n' $([[ "$GET" == '0 / 1347 (0%)' ]] && PASS || FAIL)
+printf 'properly sets brightness (without =): [ %s ]\n' $(try "$GET" = '0 / 1347 (0%)')
 
 eval "$EXE" '+500'
 GET=$(eval "$EXE")
-printf 'properly increments brightness: [ %s ]\n' $([[ "$GET" == '500 / 1347 (37%)' ]] && PASS || FAIL)
+printf 'properly increments brightness: [ %s ]\n' $(try "$GET" = '500 / 1347 (37%)')
 
 eval "$EXE" '-100'
 GET=$(eval "$EXE")
-printf 'properly decrements brightness: [ %s ]\n' $([[ "$GET" == '400 / 1347 (29%)' ]] && PASS || FAIL)
+printf 'properly decrements brightness: [ %s ]\n' $(try "$GET" = '400 / 1347 (29%)')
 
 eval "$EXE" '50%'
 GET=$(eval "$EXE")
-printf 'properly sets brightness by percent: [ %s ]\n' $([[ "$GET" == '673 / 1347 (49%)' ]] && PASS || FAIL)
+printf 'properly sets brightness by percent: [ %s ]\n' $(try "$GET" = '673 / 1347 (49%)')
 
 eval "$EXE" '+7%'
 GET=$(eval "$EXE")
-printf 'properly increments brightness by percent: [ %s ]\n' $([[ "$GET" == '767 / 1347 (56%)' ]] && PASS || FAIL)
+printf 'properly increments brightness by percent: [ %s ]\n' $(try "$GET" = '767 / 1347 (56%)')
 
 eval "$EXE" '-12%'
 GET=$(eval "$EXE")
-printf 'properly decrements brightness by percent: [ %s ]\n' $([[ "$GET" == '606 / 1347 (44%)' ]] && PASS || FAIL)
+printf 'properly decrements brightness by percent: [ %s ]\n' $(try "$GET" = '606 / 1347 (44%)')
 
 # thresholds
 export BACKLIGHT_THRESHOLD_MIN='1'
 export BACKLIGHT_THRESHOLD_MAX='25%'
 eval "$EXE" '75%'
 GET=$(eval "$EXE")
-printf 'respects threshold maximum: [ %s ]\n' $([[ "$GET" == '336 / 1347 (24%)' ]] && PASS || FAIL)
+printf 'respects threshold maximum: [ %s ]\n' $(try "$GET" = '336 / 1347 (24%)')
 
 eval "$EXE" '0'
 GET=$(eval "$EXE")
-printf 'respects threshold minimum: [ %s ]\n' $([[ "$GET" == '1 / 1347 (0%)' ]] && PASS || FAIL)
+printf 'respects threshold minimum: [ %s ]\n' $(try "$GET" = '1 / 1347 (0%)')
 unset BACKLIGHT_THRESHOLD_MIN
 unset BACKLIGHT_THRESHOLD_MAX
 
@@ -109,7 +129,7 @@ export BACKLIGHT_TRANSITION_PAUSE=50000000
 START=$(date +'%s')
 eval "$EXE" '+10%'
 STOP=$(date +'%s')
-printf 'respects transition steps and pause: [ %s ]\n' $([[ $((STOP - START)) == 1 ]] && PASS || FAIL)
+printf 'respects transition steps and pause: [ %s ]\n' $(try $((STOP - START)) -eq 1)
 
 unset START
 unset STOP
@@ -120,40 +140,40 @@ unset BACKLIGHT_TRANSITION_PAUSE
 eval "$EXE" 0 # reset
 GET=$(eval "$EXE")
 
-eval "$EXE" '+pants' &> /dev/null
+eval "$EXE" '+pants' > /dev/null 2>&1
 GET=$(eval "$EXE")
-printf 'ignores basic garbage input: [ %s ]\n' $([[ "$GET" == '0 / 1347 (0%)' ]] && PASS || FAIL)
+printf 'ignores basic garbage input: [ %s ]\n' $(try "$GET" = '0 / 1347 (0%)')
 
 # garbage environment
 export BACKLIGHT_SEARCH_PATH="$TESTDIR:::/sys/class/backlight::/sys/class/leds:"
 GET=$(eval "$EXE")
-printf 'ignores empty paths in SEARCH_PATH: [ %s ]\n' $([[ "$GET" == '0 / 1347 (0%)' ]] && PASS || FAIL)
+printf 'ignores empty paths in SEARCH_PATH: [ %s ]\n' $(try "$GET" = '0 / 1347 (0%)')
 
-eval "$EXE" l &> /dev/null
+eval "$EXE" l > /dev/null 2>&1
 GET=$?
-printf 'ignores errant, repeated delimiters in SEARCH_PATH: [ %s ]\n' $([[ "$GET" == 0 ]] && PASS || FAIL)
+printf 'ignores errant, repeated delimiters in SEARCH_PATH: [ %s ]\n' $(try "$GET" = 0)
 
 export BACKLIGHT_DEVICE=nonexistant
 GET=$(eval "$EXE" 2>&1)
-printf 'errors on basic garbage device name: [ %s ]\n' $([[ "$GET" =~ "Failed to find a match for the specified device" ]] && PASS || FAIL)
+printf 'errors on basic garbage device name: [ %s ]\n' $(try $(contains "$GET" "Failed to find a match for the specified device") -eq 0)
 
 unset BACKLIGHT_DEVICE
 unset BACKLIGHT_SEARCH_PATH
 
 export BACKLIGHT_DEVICE=""
-eval "$EXE" &> /dev/null
+eval "$EXE" > /dev/null 2>&1
 GET=$?
-printf 'ignores empty DEVICE: [ %s ]\n' $([[ "$GET" == 0 ]] && PASS || FAIL)
+printf 'ignores empty DEVICE: [ %s ]\n' $(try "$GET" -eq 0)
 
 unset BACKLIGHT_DEVICE
 export BACKLIGHT_SEARCH_PATH=":::"
-eval "$EXE" l &> /dev/null
+eval "$EXE" l > /dev/null 2>&1
 GET=$?
-printf 'ignores (effectively) empty SEARCH_PATH: [ %s ]\n' $([[ "$GET" == 0 ]] && PASS || FAIL)
+printf 'ignores (effectively) empty SEARCH_PATH: [ %s ]\n' $(try "$GET" -eq 0)
 
 # summary
-count=$(<"$TESTDIR"/TESTCOUNT)
-failed=$(<"$TESTDIR"/TESTSFAILED)
+count=$(cat "$TESTDIR"/TESTCOUNT)
+failed=$(cat "$TESTDIR"/TESTSFAILED)
 
 printf '\n%d of %d tests failed\n' "$failed" "$count"
 

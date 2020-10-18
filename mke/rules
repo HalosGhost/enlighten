@@ -32,11 +32,14 @@ debug: bin
 	@gdb --tui $(RUNCMD)
 
 doc: $(BLDDIR)
-	@(if [ -d doc ]; then (cd doc; \
-		sphinx-build -b man -Dversion=$(VER) \
-			-d doctree -E . ../$(BLDDIR) $(PROGNM).rst; \
-		rm -r -- doctree; \
-	); else true; fi)
+	@(if [ -d doc ]; then \
+		for i in $(wildcard doc/*.scd); do \
+			fname="$${i:4:-4}"; \
+			section="$${fname: -1}"; \
+			name="$${fname:0:-2}"; \
+			scdoc < doc/"$$name-$$section.scd" > $(BLDDIR)/"$$name.$$section"; \
+		done; \
+	else true; fi)
 
 cov-build: $(BLDDIR)
 	@cov-build --dir cov-int ./make.sh

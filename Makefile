@@ -5,7 +5,7 @@ CFLAGS ?= -O2 -fPIE -flto -fstack-protector-strong --param=ssp-buffer-size=1 -Wn
 VER = `git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'`
 FMFLAGS = -wp -then -wp -wp-rte
 SOURCES = $(wildcard src/*.c)
-ARCH ?= `uname -m`
+ARCH ?= $(shell uname -m)
 
 ifneq ($(ARCH), aarch64)
 CFLAGS += -fsanitize=undefined

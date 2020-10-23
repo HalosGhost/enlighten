@@ -1,1 +1,1 @@
-SUBSYSTEM=="backlight", ACTION=="add", RUN+="/usr/bin/chgrp video %S%p/brightness", RUN+="/usr/bin/chmod g+w %S%p/brightness"
+SUBSYSTEM=="backlight", ACTION=="add", RUN+="/usr/bin/env chgrp video %S%p/brightness", RUN+="/usr/bin/env chmod g+w %S%p/brightness"

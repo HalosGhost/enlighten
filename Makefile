@@ -2,7 +2,7 @@ PROGNM = enlighten
 
 CC ?= gcc
 CFLAGS ?= -O2 -fPIE -flto -fstack-protector-strong --param=ssp-buffer-size=1 -Wno-reserved-id-macro -Wall -Wextra -Wpedantic -Werror -std=gnu18
-VER = `git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'`
+VER ?= $(shell (git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' || date +"v0.r%Y%m%d"))
 FMFLAGS = -wp -then -wp -wp-rte
 SOURCES = $(wildcard src/*.c)
 ARCH ?= $(shell uname -m)

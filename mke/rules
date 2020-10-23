@@ -19,7 +19,7 @@ all: $(BLDDIR) bin check doc
 bin: $(BLDDIR)
 	@$(CC) $(CFLAGS) $(LDFLAGS) $(SOURCES) -DVERSION="\"$(VER)\n\"" -o $(BLDDIR)/$(PROGNM)
 
-check: bin
+check: $(BLDDIR)/$(PROGNM)
 	@(if [ -x ./test-suite ]; then RUNCMD=$(RUNCMD) ./test-suite; else true; fi)
 
 clean:

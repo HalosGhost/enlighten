@@ -9,20 +9,21 @@ ARCH ?= $(shell uname -m)
 LIBC = $(shell ldd /usr/bin/env | head -1 | cut -d' ' -f1)
 SANITIZERS ?= -fsanitize=undefined
 
-ifneq (musl, $(findstring musl, $(LIBC)))
-CFLAGS += $(SANITIZERS)
-endif
-
 ifneq ($(CC), tcc)
 CFLAGS += -pie -D_FORTIFY_SOURCE=2
 LDFLAGS += -Wl,-z,relro,-z,now
 endif
 
 ifeq ($(CC), clang)
-CFLAGS += -Weverything -fsanitize-trap=undefined
+CFLAGS += -Weverything
+SANITIZERS += -fsanitize-trap=undefined
 endif
 
 CFLAGS += -Wno-disabled-macro-expansion
+
+ifneq (musl, $(findstring musl, $(LIBC)))
+CFLAGS += $(SANITIZERS)
+endif
 
 BLDRT ?= dist
 CONFIGURATION ?= debug

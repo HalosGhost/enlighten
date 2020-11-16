@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef DEVICE // backlight device name
-#define DEVICE "intel_backlight"
+#define DEVICE ""
 #endif
 
 #ifndef SEARCH_PATH // colon-separated pathlist to search for devices

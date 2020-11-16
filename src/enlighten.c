@@ -67,7 +67,7 @@ bl_calc (struct brightness_cmd cmd, unsigned cur, unsigned max, unsigned bot, un
 }
 
 void
-bl_list (char *const * search_paths, size_t path_count) {
+bl_list (char *const * search_paths, size_t path_count, const char * device) {
 
     for ( size_t i = 0; i < path_count; ++ i ) {
         const char * devpath = search_paths[i];
@@ -83,22 +83,9 @@ bl_list (char *const * search_paths, size_t path_count) {
                 char * candidate = malloc(candidate_len);
                 snprintf(candidate, candidate_len, "%s/%s", devpath, p->d_name);
 
-                DIR * candidate_dir = opendir(candidate);
-                if ( candidate_dir ) {
-                    unsigned required_files = 0;
-
-                    struct dirent * cp = 0;
-                    while ( (cp = readdir(candidate_dir)) ) {
-                        required_files += !strcmp(cp->d_name, "brightness") && cp->d_type == DT_REG;
-                        required_files += !strcmp(cp->d_name, "max_brightness") && cp->d_type == DT_REG;
-                    }
-
-                    if ( required_files == 2 ) {
-                        has_candidates = true;
-                        printf("    %s\n", p->d_name);
-                    }
-
-                    closedir(candidate_dir);
+                if ( bl_path_is_device(candidate) ) {
+                    has_candidates = true;
+                    printf(" %s %s\n", !strncmp(p->d_name, device, strlen(device)) ? ">>" : "  ", p->d_name);
                 }
 
                 free(candidate);
@@ -112,5 +99,26 @@ bl_list (char *const * search_paths, size_t path_count) {
             closedir(devdir);
         }
     }
+}
+
+bool
+bl_path_is_device (char * candidate) {
+
+    DIR * candidate_dir = opendir(candidate);
+    if ( candidate_dir ) {
+        unsigned required_files = 0;
+
+        struct dirent * cp = 0;
+        while ( (cp = readdir(candidate_dir)) ) {
+            required_files += !strcmp(cp->d_name, "brightness") && cp->d_type == DT_REG;
+            required_files += !strcmp(cp->d_name, "max_brightness") && cp->d_type == DT_REG;
+        }
+
+        closedir(candidate_dir);
+
+        return required_files == 2;
+    }
+
+    return false;
 }
 

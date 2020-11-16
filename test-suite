@@ -157,13 +157,10 @@ export BACKLIGHT_DEVICE=nonexistant
 GET=$(eval "$EXE" 2>&1)
 printf 'errors on basic garbage device name: [ %s ]\n' $(try $(contains "$GET" "Failed to find a match for the specified device") -eq 0)
 
-unset BACKLIGHT_DEVICE
-unset BACKLIGHT_SEARCH_PATH
-
+export BACKLIGHT_SEARCH_PATH="$TESTDIR:/sys/class/backlight:/sys/class/leds"
 export BACKLIGHT_DEVICE=""
-eval "$EXE" > /dev/null 2>&1
-GET=$?
-printf 'ignores empty DEVICE: [ %s ]\n' $(try "$GET" -eq 0)
+GET=$(eval "$EXE")
+printf 'empty DEVICE matches first valid device: [ %s ]\n' $(try "$GET" = '0 / 1347 (0%)')
 
 unset BACKLIGHT_DEVICE
 export BACKLIGHT_SEARCH_PATH=":::"

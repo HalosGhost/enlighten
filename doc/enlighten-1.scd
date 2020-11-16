@@ -14,13 +14,14 @@ enlighten - A simple command-line tool to manage sysfs-exposed backlight devices
 	Display current brightness information (formatted: *cur / max (perc)*)
 
 *env*
-	Print a list of all environment variables (see *CONFIGURATION*) *enlighten* reads and their values.
+	Print a list of all environment variables (see *CONFIGURATION*) *enlighten* reads, their currently configured values, and their default values.
 
 *help*
 	Print help summary and exit.
 
 *list*
-	Print a list of known backlight device names.
+	Print a list of known backlight devices found in the search path.
+	The currently-configured device is prefixed with " >> ".
 
 *version*
 	Print the version information for *enlighten*.
@@ -57,33 +58,35 @@ Put more plainly:
 *enlighten* recognizes several environment variables for runtime configuration:
 
 *BACKLIGHT_DEVICE*
-	Holds the name of the device to query/adjust.
+	Holds the (optionally partial) name of the device to query/adjust.
+	*enlighten* will use the first valid device found while searching through *BACKLIGHT_SEARCH_PATH* whose name begins with the value stored in this variable.
+	If not specified, defaults to *""* (the empty string); this results in the first valid device found being used (regardless of its name).
 
 *BACKLIGHT_SEARCH_PATH*
 	Holds a colon-separated list of directories to search for backlight devices.
 	When getting or setting the current backlight state for the device specified in *BACKLIGHT_DEVICE*, *enlighten* searches the directories in this variable, in-order looking for the first device to match.
 	When listing the devices available, *enlighten* will list each valid candidate device from each directory listed in this variable.
-	If not specified, defaults to */sys/class/backlight:/sys/class/leds*.
+	If not specified, defaults to *"/sys/class/backlight:/sys/class/leds"*.
 
 *BACKLIGHT_THRESHOLD_MIN*
 	Holds a brightness value (see *DSL*) representing a saturating minimum brightness.
 	If the user-specified value would change the backlight's brightness to be less than this minimum, the brightness will be set to this minimum instead.
-	If not specified, defaults to *0*.
+	If not specified, defaults to *"0"*.
 
 *BACKLIGHT_THRESHOLD_MAX*
 	Holds a brightness value (see *DSL*) representing a saturating maximum brightness.
 	If the user-specified value would change the backlight's brightness to be greater than this maximum, the brightness will be set to this maximum instead.
-	If not specified, defaults to *100%*.
+	If not specified, defaults to *"100%"*.
 
 *BACKLIGHT_TRANSITION_STEPS*
 	Holds a number value (see *DSL*) representing the maximum number of steps to take between the current brightness and the target brightness.
 	*enlighten* will attempt to honor this number of steps as closely as possible without overshooting the target.
 	If the user-specified value results in trying to change the brightness by a fractional value per-step, each step will instead change the brightness by a single point.
-	If not specified, defaults to *1*.
+	If not specified, defaults to *"1"*.
 
 *BACKLIGHT_TRANSITION_PAUSE*
 	Holds a number value (see *DSL*) representing the amount of time (in nanoseconds) to pause between steps in a transition.
-	If not specified, defaults to *0*.
+	If not specified, defaults to *"0"*.
 
 # EXAMPLES
 

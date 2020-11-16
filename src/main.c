@@ -5,21 +5,19 @@ main (signed argc, const char * argv []) {
 
     signed status = EXIT_SUCCESS;
 
-    READ_ENV(dev, DEVICE);
+    READ_ENV(defdev, DEVICE);
     READ_ENV(devpath, SEARCH_PATH);
     READ_ENV(thresh_top, THRESHOLD_MAX);
     READ_ENV(thresh_bot, THRESHOLD_MIN);
     READ_ENV(tran_steps, TRANSITION_STEPS);
     READ_ENV(tran_pause, TRANSITION_PAUSE);
 
+    char dev [PATH_MAX] = "";
+    strncpy(dev, defdev, PATH_MAX - 1);
+
     size_t pathlen = strlen(devpath) + 1;
 
     char * pathcopy = 0, ** search_paths = 0, * mpath = 0, * bpath = 0;
-
-    if ( !dev || !*dev ) {
-        fputs(PROGNAME ": DEVICE is empty", stderr);
-        goto cleanup;
-    }
 
     pathcopy = malloc(pathlen);
     if ( !pathcopy ) {
@@ -43,7 +41,6 @@ main (signed argc, const char * argv []) {
     strncpy(pathcopy, devpath, pathlen);
 
     search_paths = malloc(sizeof (char *) * path_count);
-    search_paths[path_count - 1] = 0;
     if ( !search_paths ) {
         fputs(FAILED_TO "allocate space for the search paths\n", stderr);
         goto cleanup;
@@ -65,11 +62,19 @@ main (signed argc, const char * argv []) {
         if ( dir ) {
             struct dirent * p = 0;
             while ( (p = readdir(dir)) ) {
-                target_path = !strncmp(p->d_name, dev, strlen(dev)) ? search_paths[i] : 0;
                 if ( target_path ) { break; }
-            }
 
-            closedir(dir);
+                size_t candidate_len = strlen(devpath) + strlen(p->d_name) + 2;
+                char * candidate = malloc(candidate_len);
+                snprintf(candidate, candidate_len, "%s/%s", search_paths[i], p->d_name);
+
+                if ( bl_path_is_device(candidate) && !strncmp(p->d_name, dev, strlen(dev)) ) {
+                    target_path = search_paths[i];
+                    strncpy(dev, p->d_name, PATH_MAX - 1);
+                }
+
+                free(candidate);
+            }
         }
 
         if ( target_path ) { break; }
@@ -95,7 +100,7 @@ main (signed argc, const char * argv []) {
                 fputs(VERSION, stderr);
                 goto cleanup;
             case 'l':
-                bl_list(search_paths, path_count);
+                bl_list(search_paths, path_count, dev);
                 goto cleanup;
         }
     }

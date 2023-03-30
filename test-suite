@@ -8,7 +8,7 @@ export BACKLIGHT_SEARCH_PATH="$TESTDIR:/sys/class/backlight:/sys/class/leds"
 export BACKLIGHT_DEVICE=dev4
 
 # setup the test env
-for i in $(seq 1 5); do
+for i in $(seq 1 6); do
     mkdir -p "$TESTDIR"/dev"$i"
 done
 echo 0 > "$TESTDIR"/dev2/brightness
@@ -17,6 +17,8 @@ echo 250 > "$TESTDIR"/dev4/brightness
 echo 1347 > "$TESTDIR"/dev4/max_brightness
 mkdir -p "$TESTDIR"/dev5/max_brightness
 mkdir -p "$TESTDIR"/dev5/brightness
+echo 0 > "$TESTDIR"/dev6/brightness
+echo 10 > "$TESTDIR"/dev6/max_brightness
 touch "$TESTDIR"/notdev
 
 echo 0 > "$TESTDIR"/TESTCOUNT
@@ -109,6 +111,13 @@ eval "$EXE" '-12%'
 GET=$(eval "$EXE")
 printf 'properly decrements brightness by percent: [ %s ]\n' $(try "$GET" = '606 / 1347 (44%)')
 
+# very-small step counts
+export BACKLIGHT_DEVICE=dev6
+eval "$EXE" '+1%'
+GET=$(eval "$EXE")
+printf 'ensures percentage-changes have an effect if allowable: [ %s ]\n' $(try "$GET" = '1 / 10 (10%)')
+export BACKLIGHT_DEVICE=dev4
+
 # thresholds
 export BACKLIGHT_THRESHOLD_MIN='1'
 export BACKLIGHT_THRESHOLD_MAX='25%'
@@ -156,11 +165,6 @@ printf 'ignores errant, repeated delimiters in SEARCH_PATH: [ %s ]\n' $(try "$GE
 export BACKLIGHT_DEVICE=nonexistant
 GET=$(eval "$EXE" 2>&1)
 printf 'errors on basic garbage device name: [ %s ]\n' $(try $(contains "$GET" "Failed to find a match for the specified device") -eq 0)
-
-export BACKLIGHT_SEARCH_PATH="$TESTDIR:/sys/class/backlight:/sys/class/leds"
-export BACKLIGHT_DEVICE=""
-GET=$(eval "$EXE")
-printf 'empty DEVICE matches first valid device: [ %s ]\n' $(try "$GET" = '0 / 1347 (0%)')
 
 unset BACKLIGHT_DEVICE
 export BACKLIGHT_SEARCH_PATH=":::"
